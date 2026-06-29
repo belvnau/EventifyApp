@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- TEMA UTAMA -->
+    <style name="Theme.EventifyApp" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/colorBackground</item>
+        <item name="android:statusBarColor">@color/colorPrimary</item>
+        <item name="android:navigationBarColor">@color/colorSurface</item>
+    </style>
+
+    <!-- TEMA SPLASH -->
+    <style name="Theme.EventifyApp.Splash" parent="Theme.EventifyApp">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowBackground">@color/colorTextWhite</item>
+        <item name="android:statusBarColor">@color/colorTextWhite</item>
+    </style>
+
+    <!-- BUTTON NAVY -->
+    <style name="Widget.Eventify.Button.Navy" parent="Widget.MaterialComponents.Button">
+        <item name="android:backgroundTint">@color/colorNavyDark</item>
+        <item name="android:textColor">@color/colorTextWhite</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:paddingTop">14dp</item>
+        <item name="android:paddingBottom">14dp</item>
+        <item name="cornerRadius">12dp</item>
+    </style>
+
+    <!-- TEXTINPUTLAYOUT -->
+    <style name="Widget.Eventify.EditText" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/colorInputBorder</item>
+        <item name="boxStrokeErrorColor">@color/colorOrange</item>
+        <item name="boxBackgroundColor">@color/colorSurface</item>
+        <item name="hintTextColor">@color/colorTextHint</item>
+        <item name="android:textColorHint">@color/colorTextHint</item>
+        <item name="boxCornerRadiusTopStart">12dp</item>
+        <item name="boxCornerRadiusTopEnd">12dp</item>
+        <item name="boxCornerRadiusBottomStart">12dp</item>
+        <item name="boxCornerRadiusBottomEnd">12dp</item>
+    </style>
+
+</resources>

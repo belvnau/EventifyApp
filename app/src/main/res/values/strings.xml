@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Eventify</string>
+
+    <!-- Login -->
+    <string name="sign_in">Sign In</string>
+    <string name="give_credential">Give credential to sign in your account</string>
+    <string name="type_email">Type your email</string>
+    <string name="type_password">Type your password</string>
+    <string name="remember_me">Remember Me</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="or_continue_with">or continue with</string>
+    <string name="no_account">Don\'t have an account? </string>
+    <string name="sign_up">Sign Up</string>
+    <string name="btn_sign_in">SIGN IN</string>
+
+    <!-- Home -->
+    <string name="hi_welcome">Hi Welcome 👋</string>
+    <string name="popular_events">Popular Events</string>
+    <string name="find_events">Find events or groups…</string>
+    <string name="join_now">JOIN NOW</string>
+    <string name="members_joined">Members joined</string>
+    <string name="upcoming">Upcoming</string>
+    <string name="today">Today</string>
+    <string name="tomorrow">Tomorrow</string>
+    <string name="weekend">Weekend</string>
+    <string name="all_events">All Events</string>
+    <string name="new_groups">New groups</string>
+    <string name="your_groups">Your groups</string>
+    <string name="social_activities">Social Activities</string>
+
+    <!-- Detail Event -->
+    <string name="interested">Interested</string>
+    <string name="share">Share</string>
+    <string name="description">Description</string>
+    <string name="reviews">Reviews</string>
+    <string name="view_all">View All</string>
+    <string name="venue_location">Venue &amp; Location</string>
+    <string name="participants">Participants</string>
+    <string name="organized_by">Organized by</string>
+
+    <!-- Messages -->
+    <string name="messages">Messages</string>
+    <string name="all_messages">All Messages</string>
+    <string name="unread">Unread</string>
+
+    <!-- Reviews -->
+    <string name="add_review">Add Review</string>
+    <string name="rating">rating</string>
+
+    <!-- Profile -->
+    <string name="profile">Profile</string>
+    <string name="gender">Gender</string>
+
+    <!-- Notification -->
+    <string name="notification">Notification</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_chat">Chat</string>
+    <string name="nav_notification">Notification</string>
+    <string name="nav_profile">Profile</string>
+</resources>

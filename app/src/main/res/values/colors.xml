@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary Colors -->
+    <color name="colorPrimary">#1A2340</color>
+    <color name="colorPrimaryDark">#111827</color>
+    <color name="colorAccent">#FF6B35</color>
+
+    <!-- UI Colors -->
+    <color name="colorBackground">#F5F6FA</color>
+    <color name="colorSurface">#FFFFFF</color>
+    <color name="colorNavyDark">#1A2340</color>
+    <color name="navy_dark">#1A2340</color>
+    <color name="navy_card">#252F4A</color>
+    <color name="white">#FFFFFF</color>
+    <color name="colorOrange">#FF6B35</color>
+    <color name="colorOrangeSoft">#FFF0EA</color>
+
+    <!-- Text Colors -->
+    <color name="colorTextPrimary">#1A2340</color>
+    <color name="colorTextSecondary">#7B8194</color>
+    <color name="gray_text">#7B8194</color>
+    <color name="colorTextHint">#AAAAAA</color>
+    <color name="colorTextWhite">#FFFFFF</color>
+    <color name="colorTextOnPrimary">#FFFFFF</color>
+
+    <!-- Star Rating -->
+    <color name="colorStar">#FFC107</color>
+
+    <!-- Divider & Border -->
+    <color name="colorDivider">#E8EAF0</color>
+    <color name="colorInputBorder">#D1D5DB</color>
+
+    <!-- Dot/Badge -->
+    <color name="colorDotOnline">#22C55E</color>
+    <color name="colorDotUnread">#FF6B35</color>
+
+    <!-- Overlay -->
+    <color name="colorOverlay">#80000000</color>
+    <color name="colorWhiteAlpha70">#B3FFFFFF</color>
+</resources>

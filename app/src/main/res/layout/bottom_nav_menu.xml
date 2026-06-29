@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/bottomNavbar"
+    android:layout_width="match_parent"
+    android:layout_height="70dp"
+    android:background="@drawable/bg_nav_bottom"
+    android:orientation="horizontal"
+    android:gravity="center">
+
+    <ImageButton
+        android:id="@+id/navHome"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@android:drawable/ic_menu_today"
+        app:tint="@color/white" />
+
+    <ImageButton
+        android:id="@+id/navChat"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@android:drawable/stat_notify_chat"
+        app:tint="@color/gray_text" />
+
+    <ImageButton
+        android:id="@+id/navNotification"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_notification"
+        app:tint="@color/gray_text" />
+
+    <ImageButton
+        android:id="@+id/navProfile"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@android:drawable/ic_menu_myplaces"
+        app:tint="@color/gray_text" />
+</LinearLayout>

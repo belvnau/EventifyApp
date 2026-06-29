@@ -1,0 +1,23 @@
+package com.example.eventifyapp.repository
+
+import com.example.eventifyapp.dao.MessageDao
+import com.example.eventifyapp.model.Message
+import kotlinx.coroutines.flow.Flow
+
+class MessageRepository(private val messageDao: MessageDao) {
+
+    suspend fun insertMessage(message: Message): Long = messageDao.insertMessage(message)
+
+    suspend fun updateMessage(message: Message) = messageDao.updateMessage(message)
+
+    suspend fun deleteMessage(message: Message) = messageDao.deleteMessage(message)
+
+    fun getAllMessages(): Flow<List<Message>> = messageDao.getAllMessages()
+
+    fun getMessagesBySender(email: String): Flow<List<Message>> =
+        messageDao.getMessagesBySender(email)
+
+    suspend fun markAsRead(messageId: Long) = messageDao.markAsRead(messageId)
+
+    fun getUnreadCount(): Flow<Int> = messageDao.getUnreadCount()
+}
