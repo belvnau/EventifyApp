@@ -25,6 +25,10 @@
         <activity android:name=".activities.LoginActivity" />
         <activity android:name=".activities.SignUpActivity" />
         <activity android:name=".activities.MainActivity" />
+        <activity android:name=".activities.DetailEventActivity" />
+        <activity android:name=".activities.MessagesActivity" />
+        <activity android:name=".activities.NotificationActivity" />
+        <activity android:name=".activities.ProfileActivity" />
 
     </application>
 
