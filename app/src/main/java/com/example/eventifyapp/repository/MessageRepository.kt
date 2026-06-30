@@ -20,4 +20,10 @@ class MessageRepository(private val messageDao: MessageDao) {
     suspend fun markAsRead(messageId: Long) = messageDao.markAsRead(messageId)
 
     fun getUnreadCount(): Flow<Int> = messageDao.getUnreadCount()
+
+    // Baru
+    fun getLatestMessagePerSender(): Flow<List<Message>> = messageDao.getLatestMessagePerSender()
+
+    // Baru
+    fun getUnreadConversations(): Flow<List<Message>> = messageDao.getUnreadConversations()
 }

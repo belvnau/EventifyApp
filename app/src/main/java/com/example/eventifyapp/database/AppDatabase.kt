@@ -12,13 +12,15 @@ import com.example.eventifyapp.dao.NotificationDao
 import com.example.eventifyapp.model.Event
 import com.example.eventifyapp.model.Message
 import com.example.eventifyapp.model.NotificationItem
+import com.example.eventifyapp.dao.ReviewDao
+import com.example.eventifyapp.model.Review
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Database(
-    entities = [Event::class, Message::class, NotificationItem::class],
-    version = 1,
+    entities = [Event::class, Message::class, NotificationItem::class, Review::class],
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -26,7 +28,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun eventDao(): EventDao
     abstract fun messageDao(): MessageDao
     abstract fun notificationDao(): NotificationDao
-
+    abstract fun reviewDao(): ReviewDao
     companion object {
         @Volatile
         private var INSTANCE: AppDatabase? = null

@@ -6,6 +6,7 @@
     android:background="@color/white">
 
     <ImageView
+        android:id="@+id/ivDetailImage"
         android:layout_width="match_parent"
         android:layout_height="350dp"
         android:scaleType="centerCrop"
@@ -33,6 +34,22 @@
             android:layout_marginTop="5dp" />
 
         <TextView
+            android:id="@+id/tvDetailDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#0D1B2A"
+            android:textStyle="bold"
+            android:layout_marginTop="5dp" />
+
+        <TextView
+            android:id="@+id/tvDetailPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#FF6B00"
+            android:textStyle="bold"
+            android:layout_marginTop="5dp" />
+
+        <TextView
             android:id="@+id/tvDetailDesc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -40,11 +57,52 @@
             android:textColor="#444444"
             android:lineSpacingExtra="4dp" />
 
+        <!-- ===== Venue & Location (baru) ===== -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Venue &amp; Location"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#0D1B2A" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_marginTop="8dp"
+            android:background="#E0E0E0" />
+
+        <TextView
+            android:id="@+id/tvDetailFullAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="#444444"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/tvSeeReviews"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Lihat Semua Review →"
+            android:textColor="#FF6B00"
+            android:textStyle="bold"
+            android:padding="4dp" />
+
         <Button
             android:id="@+id/btnJoin"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_marginTop="30dp"
             android:text="Join Now" />
+
+        <Button
+            android:id="@+id/btnInterested"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="10dp"
+            android:text="Interested" />
     </LinearLayout>
 </LinearLayout>
