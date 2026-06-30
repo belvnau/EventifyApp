@@ -12,58 +12,92 @@ import java.util.Locale
 
 class NotificationAdapter(
     private var notifications: List<NotificationItem> = emptyList(),
-    private val onItemClick: (NotificationItem) -> Unit
+    private val onItemClick: (NotificationItem) -> Unit,
+    private val onAcceptClick: (NotificationItem) -> Unit,
+    private val onRejectClick: (NotificationItem) -> Unit
 ) : RecyclerView.Adapter<NotificationAdapter.NotificationViewHolder>() {
 
-    class NotificationViewHolder(val binding: ItemNotificationBinding) : RecyclerView.ViewHolder(binding.root)
+    class NotificationViewHolder(
+        val binding: ItemNotificationBinding
+    ) : RecyclerView.ViewHolder(binding.root)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotificationViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): NotificationViewHolder {
+
         val binding = ItemNotificationBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
             false
         )
+
         return NotificationViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: NotificationViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: NotificationViewHolder,
+        position: Int
+    ) {
+
         val notification = notifications[position]
+
         holder.binding.tvNotificationTitle.text = notification.title
         holder.binding.tvNotificationMessage.text = notification.message
-        
-        // Format timestamp
+
         val sdf = SimpleDateFormat("dd MMM, hh:mm a", Locale.getDefault())
-        holder.binding.tvNotificationTime.text = sdf.format(Date(notification.timestamp))
+        holder.binding.tvNotificationTime.text =
+            sdf.format(Date(notification.timestamp))
 
-        // Set unread dot visibility
-        if (notification.isRead) {
-            holder.binding.viewNotifUnreadDot.visibility = View.GONE
-        } else {
-            holder.binding.viewNotifUnreadDot.visibility = View.VISIBLE
-        }
+        holder.binding.viewNotifUnreadDot.visibility =
+            if (notification.isRead) View.GONE else View.VISIBLE
 
-        // Optional: change icon background based on notification type
         val context = holder.itemView.context
-        val orangeSoft = context.getColor(context.resources.getIdentifier("colorOrangeSoft", "color", context.packageName))
-        val primaryBlueSoft = context.getColor(context.resources.getIdentifier("colorBackground", "color", context.packageName))
-        
+
+        val orangeSoft = context.getColor(
+            context.resources.getIdentifier(
+                "colorOrangeSoft",
+                "color",
+                context.packageName
+            )
+        )
+
+        val primaryBlueSoft = context.getColor(
+            context.resources.getIdentifier(
+                "colorBackground",
+                "color",
+                context.packageName
+            )
+        )
+
         when (notification.type.lowercase(Locale.getDefault())) {
+
             "event" -> {
                 holder.binding.cvNotifIconBg.setCardBackgroundColor(orangeSoft)
                 holder.binding.ivNotificationIcon.setImageResource(
-                    context.resources.getIdentifier("ic_notification", "drawable", context.packageName)
+                    context.resources.getIdentifier(
+                        "ic_notification",
+                        "drawable",
+                        context.packageName
+                    )
                 )
             }
+
             "message" -> {
                 holder.binding.cvNotifIconBg.setCardBackgroundColor(primaryBlueSoft)
                 holder.binding.ivNotificationIcon.setImageResource(
                     android.R.drawable.stat_notify_chat
                 )
             }
-            else -> { // system
+
+            else -> {
                 holder.binding.cvNotifIconBg.setCardBackgroundColor(primaryBlueSoft)
                 holder.binding.ivNotificationIcon.setImageResource(
-                    context.resources.getIdentifier("ic_notification", "drawable", context.packageName)
+                    context.resources.getIdentifier(
+                        "ic_notification",
+                        "drawable",
+                        context.packageName
+                    )
                 )
             }
         }
@@ -71,9 +105,19 @@ class NotificationAdapter(
         holder.itemView.setOnClickListener {
             onItemClick(notification)
         }
+
+        holder.binding.btnAccept.setOnClickListener {
+            onAcceptClick(notification)
+        }
+
+        holder.binding.btnReject.setOnClickListener {
+            onRejectClick(notification)
+        }
     }
 
-    override fun getItemCount(): Int = notifications.size
+    override fun getItemCount(): Int {
+        return notifications.size
+    }
 
     fun updateData(newNotifications: List<NotificationItem>) {
         notifications = newNotifications
