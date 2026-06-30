@@ -1,108 +1,330 @@
-<LinearLayout
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/white">
+    android:background="@color/colorBackground">
 
-    <ImageView
-        android:id="@+id/ivDetailImage"
+    <!-- AppBar dengan banner image -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarDetail"
         android:layout_width="match_parent"
-        android:layout_height="350dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/img_artket_detail" />
+        android:layout_height="240dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
-    <LinearLayout
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+            <ImageView
+                android:id="@+id/ivDetailImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/img_artket_detail"
+                android:contentDescription="Event Banner" />
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbarDetail"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/colorOverlay"
+                app:layout_collapseMode="pin"
+                app:navigationIcon="@drawable/ic_arrow_back"
+                app:navigationIconTint="@color/white" />
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- Konten scrollable -->
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="20dp"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <TextView
-            android:id="@+id/tvDetailTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="26sp"
-            android:textStyle="bold"
-            android:textColor="#0D1B2A" />
-
-        <TextView
-            android:id="@+id/tvDetailLocation"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#666666"
-            android:layout_marginTop="5dp" />
-
-        <TextView
-            android:id="@+id/tvDetailDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#0D1B2A"
-            android:textStyle="bold"
-            android:layout_marginTop="5dp" />
-
-        <TextView
-            android:id="@+id/tvDetailPrice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#FF6B00"
-            android:textStyle="bold"
-            android:layout_marginTop="5dp" />
-
-        <TextView
-            android:id="@+id/tvDetailDesc"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:textColor="#444444"
-            android:lineSpacingExtra="4dp" />
+            android:orientation="vertical"
+            android:padding="20dp">
 
-        <!-- ===== Venue & Location (baru) ===== -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="Venue &amp; Location"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="#0D1B2A" />
+            <!-- Judul Event -->
+            <TextView
+                android:id="@+id/tvDetailTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/colorTextPrimary" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:layout_marginTop="8dp"
-            android:background="#E0E0E0" />
+            <!-- Lokasi -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="6dp">
 
-        <TextView
-            android:id="@+id/tvDetailFullAddress"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textColor="#444444"
-            android:textSize="13sp" />
+                <ImageView
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:src="@drawable/ic_arrow_back"
+                    android:contentDescription="Lokasi"
+                    android:layout_marginEnd="6dp" />
 
-        <TextView
-            android:id="@+id/tvSeeReviews"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Lihat Semua Review →"
-            android:textColor="#FF6B00"
-            android:textStyle="bold"
-            android:padding="4dp" />
+                <TextView
+                    android:id="@+id/tvDetailLocation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="13sp"
+                    android:textColor="@color/colorTextSecondary" />
+            </LinearLayout>
 
-        <Button
-            android:id="@+id/btnJoin"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_marginTop="30dp"
-            android:text="Join Now" />
+            <!-- Tanggal -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="4dp">
 
-        <Button
-            android:id="@+id/btnInterested"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_marginTop="10dp"
-            android:text="Interested" />
-    </LinearLayout>
-</LinearLayout>
+                <ImageView
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:src="@android:drawable/ic_menu_my_calendar"
+                    android:contentDescription="Tanggal"
+                    android:layout_marginEnd="6dp" />
+
+                <TextView
+                    android:id="@+id/tvDetailDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="13sp"
+                    android:textColor="@color/colorTextSecondary" />
+            </LinearLayout>
+
+            <!-- Harga -->
+            <TextView
+                android:id="@+id/tvDetailPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="@color/colorOrange"
+                android:layout_marginTop="6dp" />
+
+            <!-- Action Buttons: Interested + Share -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp">
+
+                <Button
+                    android:id="@+id/btnInterested"
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_weight="1"
+                    android:text="Interested"
+                    android:textColor="@color/colorOrange"
+                    android:backgroundTint="@color/colorOrangeSoft"
+                    android:layout_marginEnd="8dp"
+                    app:cornerRadius="22dp" />
+
+                <Button
+                    android:id="@+id/btnJoin"
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_weight="1"
+                    android:text="Join Now"
+                    android:textColor="@color/white"
+                    android:backgroundTint="@color/colorNavyDark"
+                    app:cornerRadius="22dp" />
+            </LinearLayout>
+
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorDivider"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Deskripsi -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Description"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="@color/colorTextPrimary"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/tvDetailDesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="13sp"
+                android:textColor="@color/colorTextSecondary"
+                android:lineSpacingMultiplier="1.5" />
+
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorDivider"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Reviews Section -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Reviews"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorTextPrimary" />
+
+                <TextView
+                    android:id="@+id/tvSeeReviews"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="View All →"
+                    android:textSize="13sp"
+                    android:textColor="@color/colorOrange" />
+            </LinearLayout>
+
+            <!-- Review Cards horizontal -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"
+                android:layout_marginTop="8dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="160dp"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="2dp"
+                        android:layout_marginEnd="10dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="10dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Christian Bale"
+                                android:textSize="12sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/colorTextPrimary" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="4.0 ★★★★"
+                                android:textSize="11sp"
+                                android:textColor="@color/colorOrange" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="16 Sep, 2025"
+                                android:textSize="10sp"
+                                android:textColor="@color/colorTextSecondary" />
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="160dp"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="2dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="10dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Sebastian Tet"
+                                android:textSize="12sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/colorTextPrimary" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="4.8 ★★★★★"
+                                android:textSize="11sp"
+                                android:textColor="@color/colorOrange" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="07 Jul, 2025"
+                                android:textSize="10sp"
+                                android:textColor="@color/colorTextSecondary" />
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                </LinearLayout>
+            </HorizontalScrollView>
+
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorDivider"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Venue & Location -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Venue &amp; Location"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="@color/colorTextPrimary"
+                android:layout_marginBottom="8dp" />
+
+            <!-- Map placeholder -->
+            <View
+                android:id="@+id/ivMapPlaceholder"
+                android:layout_width="match_parent"
+                android:layout_height="140dp"
+                android:background="@color/colorDivider" />
+
+            <TextView
+                android:id="@+id/tvDetailFullAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textColor="@color/colorTextSecondary"
+                android:textSize="13sp" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -7,61 +7,300 @@
     android:layout_height="match_parent"
     android:background="@color/colorBackground">
 
-    <!-- Top header layout -->
-    <RelativeLayout
+    <!-- Header Navy -->
+    <LinearLayout
         android:id="@+id/layoutHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:background="@color/white"
+        android:orientation="vertical"
+        android:background="@color/colorNavyDark"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingTop="48dp"
+        android:paddingBottom="20dp"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <!-- Greeting Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_centerInParent="true"
-            android:text="Eventify"
-            android:textColor="@color/navy_dark"
-            android:textSize="22sp"
-            android:textStyle="bold" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
 
-        <ImageButton
-            android:id="@+id/btnToggleLayout"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerInParent="true"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@android:drawable/ic_dialog_dialer"
-            android:contentDescription="Toggle List/Grid"
-            app:tint="@color/navy_dark" />
-    </RelativeLayout>
+            <ImageView
+                android:id="@+id/ivUserAvatar"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/img_avatar_default"
+                android:contentDescription="User Avatar"
+                android:layout_marginEnd="12dp" />
 
-    <!-- Subtitle for list -->
-    <TextView
-        android:id="@+id/tvSectionTitle"
-        android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Hi, Welcome 👋"
+                    android:textSize="12sp"
+                    android:textColor="#B3FFFFFF" />
+
+                <TextView
+                    android:id="@+id/tvUsername"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Eventify User"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white" />
+            </LinearLayout>
+
+            <!-- Toggle List/Grid -->
+            <ImageButton
+                android:id="@+id/btnToggleLayout"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_dialog_dialer"
+                android:contentDescription="Toggle List/Grid"
+                app:tint="@color/white" />
+        </LinearLayout>
+
+        <!-- Search Bar -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            android:background="@color/white"
+            android:gravity="center_vertical"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:layout_marginTop="16dp">
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:src="@android:drawable/ic_menu_search"
+                android:contentDescription="Cari"
+                android:layout_marginEnd="8dp" />
+
+            <EditText
+                android:id="@+id/etSearch"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:hint="Find events..."
+                android:background="@null"
+                android:textSize="13sp"
+                android:textColor="@color/colorTextPrimary"
+                android:singleLine="true"
+                android:inputType="text"
+                android:autofillHints="none" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Scrollable content -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScroll"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="12dp"
-        android:text="Popular Events"
-        android:textColor="@color/navy_dark"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/layoutHeader"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:fillViewport="false"
+        app:layout_constraintTop_toBottomOf="@id/layoutHeader">
 
-    <!-- RecyclerView for events -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="16dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp">
+
+            <!-- Filter Tabs -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tabUpcoming"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="Upcoming"
+                        android:gravity="center"
+                        android:textSize="13sp"
+                        android:textColor="@color/white"
+                        android:background="@color/colorOrange"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:layout_marginEnd="8dp" />
+
+                    <TextView
+                        android:id="@+id/tabToday"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="Today"
+                        android:gravity="center"
+                        android:textSize="13sp"
+                        android:textColor="@color/colorTextSecondary"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:layout_marginEnd="8dp" />
+
+                    <TextView
+                        android:id="@+id/tabTomorrow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="Tomorrow"
+                        android:gravity="center"
+                        android:textSize="13sp"
+                        android:textColor="@color/colorTextSecondary"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:layout_marginEnd="8dp" />
+
+                    <TextView
+                        android:id="@+id/tabWeekend"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="Weekend"
+                        android:gravity="center"
+                        android:textSize="13sp"
+                        android:textColor="@color/colorTextSecondary"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp" />
+                </LinearLayout>
+            </HorizontalScrollView>
+
+            <!-- Category Icons -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_horizontal"
+                android:layout_marginBottom="16dp"
+                android:baselineAligned="false">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@android:drawable/ic_menu_agenda"
+                        android:contentDescription="All Events"
+                        android:background="@color/white"
+                        android:padding="6dp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="All Events"
+                        android:textSize="11sp"
+                        android:textColor="@color/colorTextSecondary"
+                        android:layout_marginTop="4dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@android:drawable/ic_menu_my_calendar"
+                        android:contentDescription="New Groups"
+                        android:background="@color/white"
+                        android:padding="6dp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="New Groups"
+                        android:textSize="11sp"
+                        android:textColor="@color/colorTextSecondary"
+                        android:layout_marginTop="4dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@android:drawable/ic_menu_myplaces"
+                        android:contentDescription="Your Groups"
+                        android:background="@color/white"
+                        android:padding="6dp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Your Groups"
+                        android:textSize="11sp"
+                        android:textColor="@color/colorTextSecondary"
+                        android:layout_marginTop="4dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@android:drawable/ic_menu_share"
+                        android:contentDescription="Social"
+                        android:background="@color/white"
+                        android:padding="6dp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Social"
+                        android:textSize="11sp"
+                        android:textColor="@color/colorTextSecondary"
+                        android:layout_marginTop="4dp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Section Title -->
+            <TextView
+                android:id="@+id/tvSectionTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Popular Events"
+                android:textColor="@color/colorTextPrimary"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvEvents"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="8dp"
         android:paddingHorizontal="8dp"
         android:clipToPadding="false"
-        app:layout_constraintTop_toBottomOf="@id/tvSectionTitle"
-        app:layout_constraintBottom_toTopOf="@id/bottomNavbar" />
+        app:layout_constraintTop_toBottomOf="@+id/nestedScroll"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavbar" />
 
     <!-- Bottom Navigation Bar -->
     <include
