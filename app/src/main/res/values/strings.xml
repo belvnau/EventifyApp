@@ -54,8 +54,6 @@
 
     <!-- Notification -->
     <string name="notification">Notification</string>
-    <string name="notification_channel_name">Event Notification</string>
-    <string name="notification_channel_description">Notification Eventify</string>
     <string name="nav_home">Home</string>
     <string name="nav_chat">Chat</string>
     <string name="nav_notification">Notification</string>

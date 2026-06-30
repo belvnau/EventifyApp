@@ -15,6 +15,8 @@ import com.example.eventifyapp.viewmodel.EventViewModel
 import com.example.eventifyapp.viewmodel.NotificationViewModel
 import com.example.eventifyapp.viewmodel.ViewModelFactory
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
 
 class DetailEventActivity : AppCompatActivity() {
 
@@ -34,6 +36,7 @@ class DetailEventActivity : AppCompatActivity() {
         setupViewModel()
         getDataFromIntent()
         bindDataToViews()
+        setupToolbar()
         setupInterestedButton()
         setupSeeReviewsButton()
     }
@@ -66,12 +69,39 @@ class DetailEventActivity : AppCompatActivity() {
 
         binding.tvDetailTitle.text = eventTitle
         binding.tvDetailLocation.text = location
-        binding.tvDetailDate.text = date
+        binding.tvDetailDate.text = formatDate(date)
         binding.tvDetailPrice.text = price
         binding.tvDetailDesc.text = description
         binding.tvDetailFullAddress.text = "Alamat lengkap: $location"
+        
+        // Cek apakah tvParticipantCount ada di binding sebelum set text
+        // (ID ini ada di layout versi modern yang kita buat)
+        try {
+            val participantView = binding::class.java.getMethod("getTvParticipantCount").invoke(binding) as? android.widget.TextView
+            participantView?.text = "180 Participants"
+        } catch (e: Exception) {
+            // Abaikan jika tidak ada
+        }
 
         setEventImage(imageUrl)
+    }
+
+    private fun setupToolbar() {
+        // Tombol back di toolbar agar benar-benar kembali (finish)
+        binding.toolbarDetail.setNavigationOnClickListener {
+            finish()
+        }
+    }
+
+    private fun formatDate(dateString: String): String {
+        return try {
+            val parser = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val formatter = SimpleDateFormat("d MMM yyyy", Locale.getDefault())
+            val date = parser.parse(dateString)
+            if (date != null) formatter.format(date) else dateString
+        } catch (e: Exception) {
+            dateString
+        }
     }
 
     private fun setEventImage(imageUrl: String) {
