@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.EditText
 import android.widget.RatingBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -16,9 +17,13 @@ import com.example.eventifyapp.database.AppDatabase
 import com.example.eventifyapp.databinding.ActivityReviewsBinding
 import com.example.eventifyapp.model.Review
 import com.example.eventifyapp.repository.ReviewRepository
+import com.example.eventifyapp.utils.SessionManager
 import com.example.eventifyapp.viewmodel.ReviewViewModel
 import com.example.eventifyapp.viewmodel.ViewModelFactory
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.Locale
 
 class ReviewsActivity : AppCompatActivity() {
 
@@ -42,6 +47,7 @@ class ReviewsActivity : AppCompatActivity() {
 
         if (eventId != -1L) {
             viewModel.loadReviews(eventId)
+            viewModel.loadAverageRating(eventId)
         }
     }
 
@@ -64,6 +70,13 @@ class ReviewsActivity : AppCompatActivity() {
         lifecycleScope.launch {
             viewModel.reviews.collect { reviews ->
                 reviewAdapter.updateData(reviews)
+                binding.tvTotalReviews.text = "${reviews.size} Reviews"
+            }
+        }
+        lifecycleScope.launch {
+            viewModel.averageRating.collect { avg ->
+                binding.tvAverageRating.text = String.format(Locale.US, "%.1f", avg)
+                binding.rbAverageStars.rating = avg
             }
         }
     }
@@ -86,28 +99,38 @@ class ReviewsActivity : AppCompatActivity() {
 
     private fun showAddReviewDialog() {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_review, null)
-        val etName = dialogView.findViewById<EditText>(R.id.etReviewerName)
         val rbRating = dialogView.findViewById<RatingBar>(R.id.rbDialogRating)
         val etComment = dialogView.findViewById<EditText>(R.id.etReviewComment)
 
         AlertDialog.Builder(this)
-            .setTitle("Tambah Review")
             .setView(dialogView)
             .setPositiveButton("Kirim") { _, _ ->
-                val name = etName.text.toString().trim()
                 val comment = etComment.text.toString().trim()
                 val rating = rbRating.rating
 
-                if (name.isEmpty() || comment.isEmpty()) {
-                    Toast.makeText(this, "Nama dan komentar wajib diisi", Toast.LENGTH_SHORT).show()
+                if (comment.isEmpty()) {
+                    Toast.makeText(this, "Komentar wajib diisi", Toast.LENGTH_SHORT).show()
                     return@setPositiveButton
                 }
 
                 lifecycleScope.launch {
+                    val sessionManager = SessionManager(this@ReviewsActivity)
+                    val email = sessionManager.getLoggedInEmail()
+                    val database = AppDatabase.getDatabase(applicationContext)
+                    
+                    val userName = if (email != null) {
+                        val user = withContext(Dispatchers.IO) {
+                            database.userDao().getUserByEmail(email)
+                        }
+                        user?.name ?: user?.username ?: "User"
+                    } else {
+                        "User"
+                    }
+
                     viewModel.addReview(
                         Review(
                             eventId = eventId,
-                            reviewerName = name,
+                            reviewerName = userName,
                             rating = rating,
                             comment = comment
                         )

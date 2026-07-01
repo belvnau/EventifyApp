@@ -1,33 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="20dp">
+    android:padding="24dp"
+    android:background="@color/white">
 
-    <EditText
-        android:id="@+id/etReviewerName"
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Nama kamu"
-        android:inputType="textPersonName" />
+        android:text="Beri Rating"
+        android:textColor="@color/colorTextPrimary"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginBottom="4dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Bagikan pengalaman kamu tentang event ini"
+        android:textColor="@color/colorTextSecondary"
+        android:textSize="13sp"
+        android:gravity="center"
+        android:layout_marginBottom="16dp" />
 
     <RatingBar
         android:id="@+id/rbDialogRating"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_gravity="center_horizontal"
         android:numStars="5"
-        android:stepSize="1"
-        android:rating="5" />
+        android:stepSize="1.0"
+        android:rating="5"
+        android:progressTint="@color/colorStar"
+        android:progressBackgroundTint="@color/colorDivider"
+        android:secondaryProgressTint="@color/colorStar"
+        android:layout_marginBottom="16dp" />
 
-    <EditText
-        android:id="@+id/etReviewComment"
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.Eventify.EditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:hint="Tulis komentar kamu..."
-        android:inputType="textMultiLine"
-        android:minLines="3" />
+        android:hint="Tulis komentar kamu...">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etReviewComment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine"
+            android:minLines="3"
+            android:textColor="@color/colorTextPrimary"
+            android:textSize="14sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
 </LinearLayout>

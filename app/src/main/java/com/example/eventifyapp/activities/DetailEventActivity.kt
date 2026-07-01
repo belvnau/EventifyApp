@@ -2,17 +2,22 @@ package com.example.eventifyapp.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.example.eventifyapp.R
 import com.example.eventifyapp.database.AppDatabase
 import com.example.eventifyapp.databinding.ActivityDetailEventBinding
 import com.example.eventifyapp.model.NotificationItem
 import com.example.eventifyapp.repository.EventRepository
 import com.example.eventifyapp.repository.NotificationRepository
+import com.example.eventifyapp.repository.ReviewRepository
 import com.example.eventifyapp.viewmodel.EventViewModel
 import com.example.eventifyapp.viewmodel.NotificationViewModel
+import com.example.eventifyapp.viewmodel.ReviewViewModel
 import com.example.eventifyapp.viewmodel.ViewModelFactory
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -24,6 +29,7 @@ class DetailEventActivity : AppCompatActivity() {
 
     private lateinit var eventViewModel: EventViewModel
     private lateinit var notificationViewModel: NotificationViewModel
+    private lateinit var reviewViewModel: ReviewViewModel
 
     private var eventId: Long = -1
     private var eventTitle: String = ""
@@ -41,20 +47,28 @@ class DetailEventActivity : AppCompatActivity() {
         setupInterestedButton()
         setupSeeReviewsButton()
         setupJoinButton()
+        observeReviews()
+
+        if (eventId != -1L) {
+            reviewViewModel.loadReviews(eventId)
+        }
     }
 
     private fun setupViewModel() {
         val database = AppDatabase.getDatabase(applicationContext)
         val eventRepository = EventRepository(database.eventDao())
         val notificationRepository = NotificationRepository(database.notificationDao())
+        val reviewRepository = ReviewRepository(database.reviewDao())
 
         val factory = ViewModelFactory(
             eventRepository = eventRepository,
-            notificationRepository = notificationRepository
+            notificationRepository = notificationRepository,
+            reviewRepository = reviewRepository
         )
 
         eventViewModel = ViewModelProvider(this, factory)[EventViewModel::class.java]
         notificationViewModel = ViewModelProvider(this, factory)[NotificationViewModel::class.java]
+        reviewViewModel = ViewModelProvider(this, factory)[ReviewViewModel::class.java]
     }
 
     private fun getDataFromIntent() {
@@ -77,8 +91,6 @@ class DetailEventActivity : AppCompatActivity() {
         binding.tvDetailDesc.text = description
         binding.tvDetailFullAddress.text = "Alamat lengkap: $location"
         
-        // Cek apakah tvParticipantCount ada di binding sebelum set text
-        // (ID ini ada di layout versi modern yang kita buat)
         try {
             val participantView = binding::class.java.getMethod("getTvParticipantCount").invoke(binding) as? android.widget.TextView
             participantView?.text = "180 Participants"
@@ -90,7 +102,6 @@ class DetailEventActivity : AppCompatActivity() {
     }
 
     private fun setupToolbar() {
-        // Tombol back di toolbar agar benar-benar kembali (finish)
         binding.toolbarDetail.setNavigationOnClickListener {
             finish()
         }
@@ -185,6 +196,34 @@ class DetailEventActivity : AppCompatActivity() {
                     .show()
             } else {
                 Toast.makeText(this, "Link pendaftaran belum tersedia", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun observeReviews() {
+        lifecycleScope.launch {
+            reviewViewModel.reviews.collect { reviews ->
+                binding.llReviewsContainer.removeAllViews()
+                val displayReviews = reviews.take(2)
+                for (review in displayReviews) {
+                    val cardView = LayoutInflater.from(this@DetailEventActivity)
+                        .inflate(R.layout.item_detail_review, binding.llReviewsContainer, false)
+                    
+                    val tvName = cardView.findViewById<TextView>(R.id.tvReviewerName)
+                    val tvRating = cardView.findViewById<TextView>(R.id.tvReviewRating)
+                    val tvDate = cardView.findViewById<TextView>(R.id.tvReviewDate)
+                    
+                    tvName.text = review.reviewerName
+                    
+                    val ratingStr = String.format(Locale.US, "%.1f", review.rating)
+                    val stars = "★".repeat(review.rating.toInt())
+                    tvRating.text = "$ratingStr $stars"
+                    
+                    val sdf = SimpleDateFormat("dd MMM, yyyy", Locale.US)
+                    tvDate.text = sdf.format(Date(review.timestamp))
+                    
+                    binding.llReviewsContainer.addView(cardView)
+                }
             }
         }
     }
