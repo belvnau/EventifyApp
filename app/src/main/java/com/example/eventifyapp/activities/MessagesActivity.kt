@@ -172,11 +172,19 @@ class MessagesActivity : AppCompatActivity() {
     private fun setupBottomNavigation() {
         val navbarBinding = LayoutNavbarBinding.bind(binding.bottomNavbar.root)
 
-        // Set active icon for Chat
-        navbarBinding.navChat.setColorFilter(getColor(R.color.colorOrange))
-        navbarBinding.navHome.setColorFilter(getColor(R.color.gray_text))
-        navbarBinding.navNotification.setColorFilter(getColor(R.color.gray_text))
-        navbarBinding.navProfile.setColorFilter(getColor(R.color.gray_text))
+        // Active State: Chat Tab is active
+        navbarBinding.ivChatIcon.setColorFilter(getColor(R.color.colorPrimary))
+        navbarBinding.tvChatLabel.setTextColor(getColor(R.color.colorPrimary))
+
+        // Inactive States: Home, Notification, Profile
+        navbarBinding.ivHomeIcon.setColorFilter(getColor(R.color.gray_text))
+        navbarBinding.tvHomeLabel.setTextColor(getColor(R.color.gray_text))
+
+        navbarBinding.ivNotificationIcon.setColorFilter(getColor(R.color.gray_text))
+        navbarBinding.tvNotificationLabel.setTextColor(getColor(R.color.gray_text))
+
+        navbarBinding.ivProfileIcon.setColorFilter(getColor(R.color.gray_text))
+        navbarBinding.tvProfileLabel.setTextColor(getColor(R.color.gray_text))
 
         navbarBinding.navHome.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)

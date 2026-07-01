@@ -27,6 +27,9 @@ class NotificationRepository(private val notificationDao: NotificationDao) {
     suspend fun markAsRead(notificationId: Long) =
         notificationDao.markAsRead(notificationId)
 
+    suspend fun markAllAsRead() =
+        notificationDao.markAllAsRead()
+
     suspend fun markAllAsReadByEvent(eventId: Long) =
         notificationDao.markAllAsReadByEvent(eventId)
 

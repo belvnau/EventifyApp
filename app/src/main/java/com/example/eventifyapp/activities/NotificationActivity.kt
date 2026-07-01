@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -46,12 +47,17 @@ class NotificationActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         notificationAdapter = NotificationAdapter(
-            notifications = emptyList(),
             onItemClick = { notification ->
                 handleNotificationClick(notification)
             },
             onDeleteClick = { notification ->
-                handleNotificationDelete(notification)
+                showDeleteConfirmationDialog(notification)
+            },
+            onAcceptInvite = { notification ->
+                handleAcceptInvitation(notification)
+            },
+            onRejectInvite = { notification ->
+                handleRejectInvitation(notification)
             }
         )
 
@@ -62,15 +68,42 @@ class NotificationActivity : AppCompatActivity() {
     }
 
     private fun setupClickListeners() {
-        binding.btnClearAll.setOnClickListener {
-            notificationViewModel.deleteAllNotifications()
-            Toast.makeText(this, "Semua notifikasi dihapus", Toast.LENGTH_SHORT).show()
+        // Back Button
+        binding.btnBack.setOnClickListener {
+            finish()
+        }
+
+        // Search Button placeholder
+        binding.btnSearch.setOnClickListener {
+            Toast.makeText(this, "Fitur Pencarian", Toast.LENGTH_SHORT).show()
+        }
+
+        // More Options Popup Menu (Mark All Read / Clear All)
+        binding.btnMoreOptions.setOnClickListener { view ->
+            val popup = androidx.appcompat.widget.PopupMenu(this, view)
+            popup.menu.add(0, 1, 0, "Tandai Semua Dibaca")
+            popup.menu.add(0, 2, 0, "Hapus Semua")
+            popup.setOnMenuItemClickListener { menuItem ->
+                when (menuItem.itemId) {
+                    1 -> {
+                        notificationViewModel.markAllAsRead()
+                        Toast.makeText(this, "Semua ditandai dibaca", Toast.LENGTH_SHORT).show()
+                        true
+                    }
+                    2 -> {
+                        showClearAllConfirmationDialog()
+                        true
+                    }
+                    else -> false
+                }
+            }
+            popup.show()
         }
     }
 
     private fun handleNotificationClick(notification: NotificationItem) {
         lifecycleScope.launch {
-            // CRUD: Update status to read in local database
+            // CRUD: Update status to read
             notificationViewModel.markAsRead(notification.id)
             
             // Navigate if contains eventId
@@ -85,11 +118,46 @@ class NotificationActivity : AppCompatActivity() {
         }
     }
 
-    private fun handleNotificationDelete(notification: NotificationItem) {
+    private fun showDeleteConfirmationDialog(notification: NotificationItem) {
+        AlertDialog.Builder(this)
+            .setTitle("Hapus Notifikasi")
+            .setMessage("Apakah kamu yakin ingin menghapus notifikasi ini?")
+            .setPositiveButton("Hapus") { _, _ ->
+                lifecycleScope.launch {
+                    notificationViewModel.deleteNotification(notification)
+                    Toast.makeText(this@NotificationActivity, "Notifikasi dihapus", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .setNegativeButton("Batal", null)
+            .show()
+    }
+
+    private fun showClearAllConfirmationDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Hapus Semua Notifikasi")
+            .setMessage("Apakah kamu yakin ingin menghapus semua notifikasi?")
+            .setPositiveButton("Hapus Semua") { _, _ ->
+                notificationViewModel.deleteAllNotifications()
+                Toast.makeText(this@NotificationActivity, "Semua notifikasi dihapus", Toast.LENGTH_SHORT).show()
+            }
+            .setNegativeButton("Batal", null)
+            .show()
+    }
+
+    private fun handleAcceptInvitation(notification: NotificationItem) {
         lifecycleScope.launch {
-            // CRUD: Delete notification
-            notificationViewModel.deleteNotification(notification)
-            Toast.makeText(this@NotificationActivity, "Notifikasi dihapus", Toast.LENGTH_SHORT).show()
+            notificationViewModel.markAsRead(notification.id)
+            Toast.makeText(this@NotificationActivity, "Undangan diterima!", Toast.LENGTH_SHORT).show()
+            // Optionally, we can update message description or delete the notification
+            notificationViewModel.loadNotifications()
+        }
+    }
+
+    private fun handleRejectInvitation(notification: NotificationItem) {
+        lifecycleScope.launch {
+            notificationViewModel.markAsRead(notification.id)
+            Toast.makeText(this@NotificationActivity, "Undangan ditolak", Toast.LENGTH_SHORT).show()
+            notificationViewModel.loadNotifications()
         }
     }
 
@@ -125,12 +193,21 @@ class NotificationActivity : AppCompatActivity() {
     private fun setupBottomNavigation() {
         val navbarBinding = LayoutNavbarBinding.bind(binding.bottomNavbar.root)
 
-        // Set active icon for Notification
-        navbarBinding.navNotification.setColorFilter(getColor(R.color.colorOrange))
-        navbarBinding.navHome.setColorFilter(getColor(R.color.gray_text))
-        navbarBinding.navChat.setColorFilter(getColor(R.color.gray_text))
-        navbarBinding.navProfile.setColorFilter(getColor(R.color.gray_text))
+        // Active State: Notification Tab is active (colored black/dark)
+        navbarBinding.ivNotificationIcon.setColorFilter(getColor(R.color.colorPrimary))
+        navbarBinding.tvNotificationLabel.setTextColor(getColor(R.color.colorPrimary))
 
+        // Inactive States: Home, Chat, Profile (colored gray)
+        navbarBinding.ivHomeIcon.setColorFilter(getColor(R.color.gray_text))
+        navbarBinding.tvHomeLabel.setTextColor(getColor(R.color.gray_text))
+
+        navbarBinding.ivChatIcon.setColorFilter(getColor(R.color.gray_text))
+        navbarBinding.tvChatLabel.setTextColor(getColor(R.color.gray_text))
+
+        navbarBinding.ivProfileIcon.setColorFilter(getColor(R.color.gray_text))
+        navbarBinding.tvProfileLabel.setTextColor(getColor(R.color.gray_text))
+
+        // Navigation Clicks
         navbarBinding.navHome.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT

@@ -7,49 +7,104 @@
     android:layout_height="70dp"
     android:background="@drawable/bg_nav_bottom"
     android:orientation="horizontal"
-    android:gravity="center">
+    android:gravity="center"
+    android:elevation="8dp">
 
-    <ImageButton
+    <!-- Home Tab -->
+    <LinearLayout
         android:id="@+id/navHome"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@android:drawable/ic_menu_today"
-        android:contentDescription="Home"
-        app:tint="@color/white" />
+        android:clickable="true"
+        android:focusable="true">
+        <ImageView
+            android:id="@+id/ivHomeIcon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_home"
+            app:tint="@color/gray_text"
+            android:contentDescription="Home Icon" />
+        <TextView
+            android:id="@+id/tvHomeLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Home"
+            android:textSize="10sp"
+            android:textColor="@color/gray_text"
+            android:layout_marginTop="2dp" />
+    </LinearLayout>
 
-    <ImageButton
+    <!-- Chat Tab -->
+    <LinearLayout
         android:id="@+id/navChat"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@android:drawable/stat_notify_chat"
-        android:contentDescription="Chat"
-        app:tint="@color/gray_text" />
+        android:clickable="true"
+        android:focusable="true">
+        <ImageView
+            android:id="@+id/ivChatIcon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_chat"
+            app:tint="@color/gray_text"
+            android:contentDescription="Chat Icon" />
+        <TextView
+            android:id="@+id/tvChatLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chat"
+            android:textSize="10sp"
+            android:textColor="@color/gray_text"
+            android:layout_marginTop="2dp" />
+    </LinearLayout>
 
+    <!-- Notification Tab -->
     <FrameLayout
+        android:id="@+id/navNotification"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1">
-
-        <ImageButton
-            android:id="@+id/navNotification"
+        android:layout_weight="1"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackgroundBorderless">
+        
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_notification"
-            android:contentDescription="Notifications"
-            app:tint="@color/gray_text" />
+            android:orientation="vertical"
+            android:gravity="center">
+            <ImageView
+                android:id="@+id/ivNotificationIcon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_notification"
+                app:tint="@color/gray_text"
+                android:contentDescription="Notification Icon" />
+            <TextView
+                android:id="@+id/tvNotificationLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Notification"
+                android:textSize="10sp"
+                android:textColor="@color/gray_text"
+                android:layout_marginTop="2dp" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/tvNotificationBadge"
-            android:layout_width="18dp"
-            android:layout_height="18dp"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
             android:layout_gravity="top|center_horizontal"
-            android:layout_marginTop="12dp"
-            android:layout_marginStart="14dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="12dp"
             android:background="@drawable/bg_badge"
             android:gravity="center"
             android:textColor="@color/white"
@@ -59,13 +114,31 @@
             tools:text="3" />
     </FrameLayout>
 
-    <ImageButton
+    <!-- Profile Tab -->
+    <LinearLayout
         android:id="@+id/navProfile"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@android:drawable/ic_menu_myplaces"
-        android:contentDescription="Profile"
-        app:tint="@color/gray_text" />
+        android:clickable="true"
+        android:focusable="true">
+        <ImageView
+            android:id="@+id/ivProfileIcon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_profile"
+            app:tint="@color/gray_text"
+            android:contentDescription="Profile Icon" />
+        <TextView
+            android:id="@+id/tvProfileLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Profile"
+            android:textSize="10sp"
+            android:textColor="@color/gray_text"
+            android:layout_marginTop="2dp" />
+    </LinearLayout>
 </LinearLayout>

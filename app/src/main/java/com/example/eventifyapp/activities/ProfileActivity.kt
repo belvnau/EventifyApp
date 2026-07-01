@@ -256,10 +256,19 @@ class ProfileActivity : AppCompatActivity() {
     private fun setupBottomNavigation() {
         val navbarBinding = LayoutNavbarBinding.bind(findViewById(R.id.bottomNavbar))
 
-        navbarBinding.navProfile.setColorFilter(getColor(R.color.colorOrange))
-        navbarBinding.navHome.setColorFilter(getColor(R.color.gray_text))
-        navbarBinding.navChat.setColorFilter(getColor(R.color.gray_text))
-        navbarBinding.navNotification.setColorFilter(getColor(R.color.gray_text))
+        // Active State: Profile Tab is active
+        navbarBinding.ivProfileIcon.setColorFilter(getColor(R.color.colorPrimary))
+        navbarBinding.tvProfileLabel.setTextColor(getColor(R.color.colorPrimary))
+
+        // Inactive States: Home, Chat, Notification
+        navbarBinding.ivHomeIcon.setColorFilter(getColor(R.color.gray_text))
+        navbarBinding.tvHomeLabel.setTextColor(getColor(R.color.gray_text))
+
+        navbarBinding.ivChatIcon.setColorFilter(getColor(R.color.gray_text))
+        navbarBinding.tvChatLabel.setTextColor(getColor(R.color.gray_text))
+
+        navbarBinding.ivNotificationIcon.setColorFilter(getColor(R.color.gray_text))
+        navbarBinding.tvNotificationLabel.setTextColor(getColor(R.color.gray_text))
 
         navbarBinding.navHome.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)

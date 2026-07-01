@@ -195,7 +195,20 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupBottomNavigation() {
         val navbarBinding = LayoutNavbarBinding.bind(binding.bottomNavbar.root)
-        navbarBinding.navHome.setColorFilter(getColor(R.color.colorOrange))
+        
+        // Active State: Home Tab is active
+        navbarBinding.ivHomeIcon.setColorFilter(getColor(R.color.colorPrimary))
+        navbarBinding.tvHomeLabel.setTextColor(getColor(R.color.colorPrimary))
+
+        // Inactive States: Chat, Notification, Profile
+        navbarBinding.ivChatIcon.setColorFilter(getColor(R.color.gray_text))
+        navbarBinding.tvChatLabel.setTextColor(getColor(R.color.gray_text))
+
+        navbarBinding.ivNotificationIcon.setColorFilter(getColor(R.color.gray_text))
+        navbarBinding.tvNotificationLabel.setTextColor(getColor(R.color.gray_text))
+
+        navbarBinding.ivProfileIcon.setColorFilter(getColor(R.color.gray_text))
+        navbarBinding.tvProfileLabel.setTextColor(getColor(R.color.gray_text))
         
         navbarBinding.navChat.setOnClickListener {
             startActivity(Intent(this, MessagesActivity::class.java).apply { flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT })

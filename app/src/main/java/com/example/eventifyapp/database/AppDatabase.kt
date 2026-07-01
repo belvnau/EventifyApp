@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 
 @Database(
     entities = [Event::class, Message::class, NotificationItem::class, Review::class, User::class],
-    version = 5,
+    version = 6,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -86,28 +86,34 @@ abstract class AppDatabase : RoomDatabase() {
                 isRead = false
             ))
 
-            // Seed dummy notifications
+            // Seed dummy notifications matching mockup
             database.notificationDao().insertNotification(NotificationItem(
-                title = "Welcome to Eventify",
-                message = "Selamat datang di EventifyApp! Temukan event-event menarik di sekitarmu.",
+                title = "Antonio Lee",
+                message = "started following you",
                 type = "system",
-                timestamp = System.currentTimeMillis() - 86400000,
+                timestamp = System.currentTimeMillis() - 10000, // 10s ago
                 isRead = false
             ))
             database.notificationDao().insertNotification(NotificationItem(
-                title = "Tech Conference 2026",
-                message = "Event 'Tech Conference 2026' yang kamu ikuti akan berlangsung dalam 2 minggu.",
+                title = "Michael Clifford",
+                message = "invite you on Doodle x English Meetup 2025",
+                type = "invite",
+                timestamp = System.currentTimeMillis() - 60000, // 1 min ago
+                isRead = false
+            ))
+            database.notificationDao().insertNotification(NotificationItem(
+                title = "You",
+                message = "add Doodle x English Meetup to your event",
                 type = "event",
-                timestamp = System.currentTimeMillis() - 43200000,
-                isRead = false,
-                eventId = 1
+                timestamp = System.currentTimeMillis() - 3600000, // 1 hr ago
+                isRead = false
             ))
             database.notificationDao().insertNotification(NotificationItem(
-                title = "Pesan Baru",
-                message = "Sarah: Kak, mau tanya untuk K-Pop Picnic nanti...",
-                type = "message",
-                timestamp = System.currentTimeMillis() - 3600000,
-                isRead = false
+                title = "Demas Handika",
+                message = "liked your Artket 05 review",
+                type = "event",
+                timestamp = System.currentTimeMillis() - 72000000, // 20 hr ago (Yesterday)
+                isRead = true
             ))
         }
     }

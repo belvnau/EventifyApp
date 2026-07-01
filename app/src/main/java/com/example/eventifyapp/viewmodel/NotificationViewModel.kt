@@ -71,6 +71,18 @@ class NotificationViewModel(private val repository: NotificationRepository) : Vi
         }
     }
 
+    fun markAllAsRead() {
+        viewModelScope.launch {
+            try {
+                repository.markAllAsRead()
+                loadUnreadCount()
+                loadNotifications()
+            } catch (e: Exception) {
+                _error.value = e.message
+            }
+        }
+    }
+
     suspend fun deleteNotification(notification: NotificationItem) {
         try {
             repository.deleteNotification(notification)
