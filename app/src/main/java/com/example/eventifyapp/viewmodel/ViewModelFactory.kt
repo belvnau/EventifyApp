@@ -2,16 +2,16 @@ package com.example.eventifyapp.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.eventifyapp.repository.EventRepository
-import com.example.eventifyapp.repository.NotificationRepository
-import com.example.eventifyapp.repository.ReviewRepository
-import com.example.eventifyapp.repository.MessageRepository
+import com.example.eventifyapp.repository.*
+import com.example.eventifyapp.utils.SessionManager
 
 class ViewModelFactory(
     private val eventRepository: EventRepository? = null,
     private val notificationRepository: NotificationRepository? = null,
     private val reviewRepository: ReviewRepository? = null,
-    private val messageRepository: MessageRepository? = null
+    private val messageRepository: MessageRepository? = null,
+    private val userRepository: UserRepository? = null,
+    private val sessionManager: SessionManager? = null
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -29,7 +29,14 @@ class ViewModelFactory(
             modelClass.isAssignableFrom(MessageViewModel::class.java) -> {
                 MessageViewModel(messageRepository ?: throw IllegalArgumentException("MessageRepository required")) as T
             }
+            modelClass.isAssignableFrom(UserViewModel::class.java) -> {
+                UserViewModel(
+                    userRepository ?: throw IllegalArgumentException("UserRepository required"),
+                    sessionManager ?: throw IllegalArgumentException("SessionManager required")
+                ) as T
+            }
             else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
         }
     }
 }
+

@@ -53,7 +53,26 @@ class EventAdapter(
             loadImage(event.imageUrl, b.ivEventImage, context)
             
             b.btnJoinNow.setOnClickListener {
-                // Handle Join (Dummy)
+                if (event.registrationUrl.isNotEmpty()) {
+                    androidx.appcompat.app.AlertDialog.Builder(context)
+                        .setTitle("Pendaftaran Eksternal")
+                        .setMessage("Kamu akan diarahkan ke link pendaftaran di luar aplikasi:\n${event.registrationUrl}\n\nApakah kamu ingin melanjutkan?")
+                        .setPositiveButton("Join") { dialog, _ ->
+                            try {
+                                val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(event.registrationUrl))
+                                context.startActivity(intent)
+                            } catch (e: Exception) {
+                                android.widget.Toast.makeText(context, "Link tidak valid", android.widget.Toast.LENGTH_SHORT).show()
+                            }
+                            dialog.dismiss()
+                        }
+                        .setNegativeButton("Cancel") { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        .show()
+                } else {
+                    android.widget.Toast.makeText(context, "Link pendaftaran belum tersedia", android.widget.Toast.LENGTH_SHORT).show()
+                }
             }
         } else if (holder.binding is ItemEventGridBinding) {
             val b = holder.binding

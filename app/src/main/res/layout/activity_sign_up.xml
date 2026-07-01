@@ -65,9 +65,9 @@
             app:layout_constraintTop_toBottomOf="@id/btnBack"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <!-- Full Name -->
+        <!-- Username -->
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilFullName"
+            android:id="@+id/tilUsername"
             style="@style/Widget.Eventify.EditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -77,11 +77,11 @@
             app:layout_constraintEnd_toEndOf="parent">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etFullName"
+                android:id="@+id/etUsername"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
-                android:hint="Full Name"
-                android:inputType="textPersonName"
+                android:hint="Username"
+                android:inputType="text"
                 android:textColor="@color/colorTextPrimary"
                 android:textColorHint="@color/colorTextHint" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -93,7 +93,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            app:layout_constraintTop_toBottomOf="@id/tilFullName"
+            app:layout_constraintTop_toBottomOf="@id/tilUsername"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 

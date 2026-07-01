@@ -27,6 +27,7 @@ class DetailEventActivity : AppCompatActivity() {
 
     private var eventId: Long = -1
     private var eventTitle: String = ""
+    private var registrationUrl: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +40,7 @@ class DetailEventActivity : AppCompatActivity() {
         setupToolbar()
         setupInterestedButton()
         setupSeeReviewsButton()
+        setupJoinButton()
     }
 
     private fun setupViewModel() {
@@ -58,6 +60,7 @@ class DetailEventActivity : AppCompatActivity() {
     private fun getDataFromIntent() {
         eventId = intent.getLongExtra("EVENT_ID", -1)
         eventTitle = intent.getStringExtra("EVENT_TITLE") ?: "Detail Event"
+        registrationUrl = intent.getStringExtra("EVENT_REGISTRATION_URL") ?: ""
     }
 
     private fun bindDataToViews() {
@@ -158,6 +161,31 @@ class DetailEventActivity : AppCompatActivity() {
                 putExtra("EVENT_ID", eventId)
             }
             startActivity(intent)
+        }
+    }
+
+    private fun setupJoinButton() {
+        binding.btnJoin.setOnClickListener {
+            if (registrationUrl.isNotEmpty()) {
+                androidx.appcompat.app.AlertDialog.Builder(this)
+                    .setTitle("Pendaftaran Eksternal")
+                    .setMessage("Kamu akan diarahkan ke link pendaftaran di luar aplikasi:\n$registrationUrl\n\nApakah kamu ingin melanjutkan?")
+                    .setPositiveButton("Join") { dialog, _ ->
+                        try {
+                            val intent = Intent(Intent.ACTION_VIEW, android.net.Uri.parse(registrationUrl))
+                            startActivity(intent)
+                        } catch (e: Exception) {
+                            Toast.makeText(this, "Link tidak valid", Toast.LENGTH_SHORT).show()
+                        }
+                        dialog.dismiss()
+                    }
+                    .setNegativeButton("Cancel") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
+            } else {
+                Toast.makeText(this, "Link pendaftaran belum tersedia", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }

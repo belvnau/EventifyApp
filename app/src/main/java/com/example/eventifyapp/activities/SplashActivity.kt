@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.eventifyapp.R
+import com.example.eventifyapp.utils.SessionManager
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -18,11 +19,17 @@ class SplashActivity : AppCompatActivity() {
         lifecycleScope.launch {
             delay(2000)
 
-            val intent = Intent(this@SplashActivity, LoginActivity::class.java)
-            intent.putExtra("FROM_SPLASH", true)
-            intent.putExtra("APP_VERSION", "1.0")
+            val sessionManager = SessionManager(this@SplashActivity)
+            val intent = if (sessionManager.isLoggedIn()) {
+                Intent(this@SplashActivity, MainActivity::class.java)
+            } else {
+                Intent(this@SplashActivity, LoginActivity::class.java).apply {
+                    putExtra("FROM_SPLASH", true)
+                    putExtra("APP_VERSION", "1.0")
+                }
+            }
             startActivity(intent)
             finish()
         }
     }
-}
+}

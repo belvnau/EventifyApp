@@ -5,7 +5,13 @@ import android.os.Bundle
 import android.text.TextUtils
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import com.example.eventifyapp.database.AppDatabase
 import com.example.eventifyapp.databinding.ActivityLoginBinding
+import com.example.eventifyapp.utils.SessionManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class LoginActivity : AppCompatActivity() {
 
@@ -65,21 +71,35 @@ class LoginActivity : AppCompatActivity() {
             return
         }
 
-        // Simpan ke SharedPreferences
-        val sharedPrefs = getSharedPreferences("user_prefs", MODE_PRIVATE)
-        sharedPrefs.edit().apply {
-            putString("USER_EMAIL", email)
-            putString("USER_NAME", email.substringBefore("@"))
-            apply()
-        }
+        val db = AppDatabase.getDatabase(this)
+        lifecycleScope.launch {
+            val user = withContext(Dispatchers.IO) {
+                db.userDao().getUserByEmail(email)
+            }
+            if (user == null) {
+                binding.etEmail.error = "Email belum terdaftar"
+                binding.etEmail.requestFocus()
+                return@launch
+            }
 
-        // Login berhasil → pindah ke MainActivity
-        val intent = Intent(this, MainActivity::class.java).apply {
-            putExtra("USER_EMAIL", email)
-            putExtra("USER_NAME", email.substringBefore("@"))
-            putExtra("IS_LOGGED_IN", true)
+            if (user.password != password) {
+                binding.etPassword.error = "Password salah"
+                binding.etPassword.requestFocus()
+                return@launch
+            }
+
+            // Save session
+            val sessionManager = SessionManager(this@LoginActivity)
+            sessionManager.saveSession(email)
+
+            // Login berhasil → pindah ke MainActivity
+            val intent = Intent(this@LoginActivity, MainActivity::class.java).apply {
+                putExtra("USER_EMAIL", email)
+                putExtra("USER_NAME", user.username)
+                putExtra("IS_LOGGED_IN", true)
+            }
+            startActivity(intent)
+            finish()
         }
-        startActivity(intent)
-        finish()
     }
-}
+}

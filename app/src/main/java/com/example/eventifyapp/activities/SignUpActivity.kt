@@ -4,7 +4,16 @@ import android.os.Bundle
 import android.text.TextUtils
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import com.example.eventifyapp.database.AppDatabase
 import com.example.eventifyapp.databinding.ActivitySignUpBinding
+import com.example.eventifyapp.model.User
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class SignUpActivity : AppCompatActivity() {
 
@@ -33,14 +42,14 @@ class SignUpActivity : AppCompatActivity() {
     }
 
     private fun handleSignUp() {
-        val name = binding.etFullName.text.toString().trim()
+        val username = binding.etUsername.text.toString().trim()
         val email = binding.etEmail.text.toString().trim()
         val password = binding.etPassword.text.toString().trim()
         val confirmPassword = binding.etConfirmPassword.text.toString().trim()
 
-        if (TextUtils.isEmpty(name)) {
-            binding.etFullName.error = "Nama lengkap tidak boleh kosong"
-            binding.etFullName.requestFocus()
+        if (TextUtils.isEmpty(username)) {
+            binding.etUsername.error = "Username tidak boleh kosong"
+            binding.etUsername.requestFocus()
             return
         }
 
@@ -80,7 +89,34 @@ class SignUpActivity : AppCompatActivity() {
             return
         }
 
-        Toast.makeText(this, "Akun berhasil dibuat!", Toast.LENGTH_SHORT).show()
-        finish()
+        val db = AppDatabase.getDatabase(this)
+        lifecycleScope.launch {
+            val existingUser = withContext(Dispatchers.IO) {
+                db.userDao().getUserByEmail(email)
+            }
+            if (existingUser != null) {
+                binding.etEmail.error = "Email sudah terdaftar"
+                binding.etEmail.requestFocus()
+                return@launch
+            }
+
+            val currentDate = SimpleDateFormat("MMM yyyy", Locale.getDefault()).format(Date())
+            val newUser = User(
+                name = username,
+                username = username,
+                email = email,
+                password = password,
+                bio = "Hello! I am a new Eventify user.",
+                location = "Jakarta, ID",
+                joinedDate = "Joined $currentDate"
+            )
+
+            withContext(Dispatchers.IO) {
+                db.userDao().insertUser(newUser)
+            }
+
+            Toast.makeText(this@SignUpActivity, "Akun berhasil dibuat! Silakan login.", Toast.LENGTH_SHORT).show()
+            finish()
+        }
     }
-}
+}

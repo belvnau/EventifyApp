@@ -16,7 +16,8 @@ object DataSeeder {
                 price = "Rp 500.000",
                 category = "Technology",
                 imageUrl = "img_tech",
-                organizer = "Tech Indonesia"
+                organizer = "Tech Indonesia",
+                registrationUrl = "https://www.google.com"
             ),
             Event(
                 id = 0,
@@ -28,7 +29,8 @@ object DataSeeder {
                 price = "Rp 250.000",
                 category = "Music",
                 imageUrl = "img_jazzfest",
-                organizer = "Jakarta Arts Council"
+                organizer = "Jakarta Arts Council",
+                registrationUrl = "https://www.google.com"
             ),
             Event(
                 id = 0,
@@ -40,7 +42,8 @@ object DataSeeder {
                 price = "Rp 100.000",
                 category = "Food",
                 imageUrl = "img_fnb",
-                organizer = "F&B Indonesia"
+                organizer = "F&B Indonesia",
+                registrationUrl = "https://www.google.com"
             ),
             Event(
                 id = 0,
@@ -52,7 +55,8 @@ object DataSeeder {
                 price = "Free",
                 category = "Fun",
                 imageUrl = "img_kpoppicnic",
-                organizer = "+62 club"
+                organizer = "+62 club",
+                registrationUrl = "https://forms.gle"
             ),
             Event(
                 id = 0,
@@ -64,7 +68,8 @@ object DataSeeder {
                 price = "Rp 100.000",
                 category = "Health",
                 imageUrl = "img_yoga",
-                organizer = "Rocca Space"
+                organizer = "Rocca Space",
+                registrationUrl = "https://www.google.com"
             ),
             Event(
                 id = 0,
@@ -76,7 +81,8 @@ object DataSeeder {
                 price = "Free Entry",
                 category = "Art",
                 imageUrl = "img_artket",
-                organizer = "Artket Collective"
+                organizer = "Artket Collective",
+                registrationUrl = "https://www.google.com"
             )
         )
     }

@@ -17,5 +17,6 @@ data class Event(
     val imageUrl: String = "",
     val organizer: String = "",
     val isFavorite: Boolean = false,
+    val registrationUrl: String = "",
     val createdAt: Long = System.currentTimeMillis()
 )
