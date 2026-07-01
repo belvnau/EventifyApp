@@ -56,7 +56,17 @@ class MessagesActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 viewModel.markAsRead(message.id)
 
-                startActivity(intent)
+                val sharedPrefs = getSharedPreferences("user_prefs", MODE_PRIVATE)
+                val currentUserEmail = sharedPrefs.getString("USER_EMAIL", "nasywa@example.com") ?: "nasywa@example.com"
+                
+                val chatPartnerEmail = if (message.senderEmail == currentUserEmail) message.receiverEmail else message.senderEmail
+                val chatPartnerName = if (message.senderEmail == currentUserEmail) "Admin" else message.senderName
+
+                val chatIntent = Intent(this@MessagesActivity, ChatDetailActivity::class.java).apply {
+                    putExtra("SENDER_EMAIL", chatPartnerEmail)
+                    putExtra("SENDER_NAME", chatPartnerName)
+                }
+                startActivity(chatIntent)
             }
         }
 

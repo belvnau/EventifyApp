@@ -6,6 +6,10 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.eventifyapp.adapters.ReviewAdapter
+import com.example.eventifyapp.repository.ReviewRepository
+import com.example.eventifyapp.viewmodel.ReviewViewModel
 import com.example.eventifyapp.database.AppDatabase
 import com.example.eventifyapp.databinding.ActivityDetailEventBinding
 import com.example.eventifyapp.model.NotificationItem
@@ -24,6 +28,8 @@ class DetailEventActivity : AppCompatActivity() {
 
     private lateinit var eventViewModel: EventViewModel
     private lateinit var notificationViewModel: NotificationViewModel
+    private lateinit var reviewViewModel: ReviewViewModel
+    private lateinit var reviewPreviewAdapter: ReviewAdapter
 
     private var eventId: Long = -1
     private var eventTitle: String = ""
@@ -41,20 +47,24 @@ class DetailEventActivity : AppCompatActivity() {
         setupInterestedButton()
         setupSeeReviewsButton()
         setupJoinButton()
+        setupReviewPreview()
     }
 
     private fun setupViewModel() {
         val database = AppDatabase.getDatabase(applicationContext)
         val eventRepository = EventRepository(database.eventDao())
         val notificationRepository = NotificationRepository(database.notificationDao())
+        val reviewRepository = ReviewRepository(database.reviewDao())  // baru
 
         val factory = ViewModelFactory(
             eventRepository = eventRepository,
-            notificationRepository = notificationRepository
+            notificationRepository = notificationRepository,
+            reviewRepository = reviewRepository  // baru
         )
 
         eventViewModel = ViewModelProvider(this, factory)[EventViewModel::class.java]
         notificationViewModel = ViewModelProvider(this, factory)[NotificationViewModel::class.java]
+        reviewViewModel = ViewModelProvider(this, factory)[ReviewViewModel::class.java]  // baru
     }
 
     private fun getDataFromIntent() {
@@ -185,6 +195,28 @@ class DetailEventActivity : AppCompatActivity() {
                     .show()
             } else {
                 Toast.makeText(this, "Link pendaftaran belum tersedia", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun setupReviewPreview() {
+        reviewPreviewAdapter = ReviewAdapter(reviews = emptyList())
+        binding.rvReviewPreview.apply {
+            layoutManager = LinearLayoutManager(
+                this@DetailEventActivity,
+                LinearLayoutManager.HORIZONTAL,
+                false
+            )
+            adapter = reviewPreviewAdapter
+        }
+
+
+        if (eventId != -1L) {
+            reviewViewModel.loadReviews(eventId)
+            lifecycleScope.launch {
+                reviewViewModel.reviews.collect { reviews ->
+                    reviewPreviewAdapter.updateData(newReviews = reviews.take(n = 3))
+                }
             }
         }
     }
