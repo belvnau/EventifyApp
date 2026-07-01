@@ -6,45 +6,31 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.example.eventifyapp.dao.EventDao
-import com.example.eventifyapp.dao.MessageDao
-import com.example.eventifyapp.dao.NotificationDao
-import com.example.eventifyapp.dao.ReviewDao
-import com.example.eventifyapp.model.Event
-import com.example.eventifyapp.model.Message
-import com.example.eventifyapp.model.NotificationItem
-import com.example.eventifyapp.model.Review
+import com.example.eventifyapp.dao.*
+import com.example.eventifyapp.model.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Database(
-    entities = [
-        Event::class,
-        Message::class,
-        NotificationItem::class,
-        Review::class
-    ],
-    version = 3,
+    entities = [Event::class, Message::class, NotificationItem::class, Review::class, User::class],
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
-
     abstract fun eventDao(): EventDao
     abstract fun messageDao(): MessageDao
     abstract fun notificationDao(): NotificationDao
     abstract fun reviewDao(): ReviewDao
+    abstract fun userDao(): UserDao
 
     companion object {
-
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
         fun getDatabase(context: Context): AppDatabase {
-
             return INSTANCE ?: synchronized(this) {
-
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
@@ -52,41 +38,37 @@ abstract class AppDatabase : RoomDatabase() {
                 )
                     .fallbackToDestructiveMigration()
                     .addCallback(object : Callback() {
-
-                        override fun onCreate(db: SupportSQLiteDatabase) {
-                            super.onCreate(db)
-
+                        override fun onOpen(db: SupportSQLiteDatabase) {
+                            super.onOpen(db)
+                            // Pastikan data terisi jika kosong setelah migrasi
                             CoroutineScope(Dispatchers.IO).launch {
-
-                                INSTANCE?.let {
-
-                                    populateDatabase(it)
-
+                                INSTANCE?.let { database ->
+                                    if (database.eventDao().getEventCount() == 0) {
+                                        populateDatabase(database)
+                                    }
                                 }
-
                             }
-
                         }
-
                     })
                     .build()
-
                 INSTANCE = instance
-
                 instance
-
             }
-
         }
 
         private suspend fun populateDatabase(database: AppDatabase) {
-
-            database.eventDao().insertEvents(
-                DataSeeder.getDummyEvents()
-            )
-
+            val events = DataSeeder.getDummyEvents()
+            database.eventDao().insertEvents(events)
+            
+            database.userDao().insertUser(User(
+                id = 1,
+                name = "Syaira Poetry",
+                username = "poetrysya",
+                email = "poetrysa@gmail.com",
+                password = "password123",
+                bio = "Event enthusiast and creative designer.",
+                location = "Jakarta, ID"
+            ))
         }
-
     }
-
 }

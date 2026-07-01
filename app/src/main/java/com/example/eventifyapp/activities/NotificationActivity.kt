@@ -3,128 +3,59 @@ package com.example.eventifyapp.activities
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.eventifyapp.R
-import com.example.eventifyapp.adapters.NotificationAdapter
-import com.example.eventifyapp.database.AppDatabase
 import com.example.eventifyapp.databinding.ActivityNotificationBinding
 import com.example.eventifyapp.databinding.LayoutNavbarBinding
-import com.example.eventifyapp.repository.NotificationRepository
-import com.example.eventifyapp.viewmodel.NotificationViewModel
-import com.example.eventifyapp.viewmodel.ViewModelFactory
-import kotlinx.coroutines.launch
 
 class NotificationActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityNotificationBinding
-    private lateinit var viewModel: NotificationViewModel
-    private lateinit var adapter: NotificationAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding = ActivityNotificationBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setupViewModel()
-        setupRecyclerView()
-        observeNotifications()
         setupBottomNavigation()
     }
 
-    private fun setupViewModel() {
-
-        val database = AppDatabase.getDatabase(applicationContext)
-
-        val repository = NotificationRepository(
-            database.notificationDao()
-        )
-
-        val factory = ViewModelFactory(
-            notificationRepository = repository
-        )
-
-        viewModel = ViewModelProvider(
-            this,
-            factory
-        )[NotificationViewModel::class.java]
-
-    }
-
-    private fun setupRecyclerView() {
-
-        adapter = NotificationAdapter(
-            notifications = emptyList(),
-
-            onItemClick = { notification ->
-
-                lifecycleScope.launch {
-
-                    viewModel.markAsRead(notification.id)
-
-                }
-
-            }
-        )
-
-        binding.rvNotifications.layoutManager =
-            LinearLayoutManager(this)
-
-        binding.rvNotifications.adapter = adapter
-
-    }
-
-    private fun observeNotifications() {
-
-        lifecycleScope.launch {
-
-            viewModel.notifications.collect {
-
-                adapter.updateData(it)
-
-            }
-
-        }
-
-    }
-
     private fun setupBottomNavigation() {
+        val navbarBinding = LayoutNavbarBinding.bind(binding.bottomNavbar.root)
 
-        val navbarBinding =
-            LayoutNavbarBinding.bind(binding.bottomNavbar.root)
-
-        navbarBinding.navNotification.setColorFilter(
-            getColor(R.color.colorOrange)
-        )
+        // Set active icon for Notification
+        navbarBinding.navNotification.setColorFilter(getColor(R.color.colorOrange))
+        navbarBinding.navHome.setColorFilter(getColor(R.color.gray_text))
+        navbarBinding.navChat.setColorFilter(getColor(R.color.gray_text))
+        navbarBinding.navProfile.setColorFilter(getColor(R.color.gray_text))
 
         navbarBinding.navHome.setOnClickListener {
-
-            startActivity(
-                Intent(this, MainActivity::class.java)
-            )
-
-            finish()
-
+            val intent = Intent(this, MainActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+            startActivity(intent)
+            overridePendingTransition(0, 0)
         }
 
         navbarBinding.navChat.setOnClickListener {
+            val intent = Intent(this, MessagesActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+            startActivity(intent)
+            overridePendingTransition(0, 0)
+        }
 
-            startActivity(
-                Intent(this, MessagesActivity::class.java)
-            )
-
+        navbarBinding.navNotification.setOnClickListener {
+            // Already here
         }
 
         navbarBinding.navProfile.setOnClickListener {
-
-            startActivity(
-                Intent(this, ProfileActivity::class.java)
-            )
-
+            val intent = Intent(this, ProfileActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+            startActivity(intent)
+            overridePendingTransition(0, 0)
         }
-
     }
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+    }
 }

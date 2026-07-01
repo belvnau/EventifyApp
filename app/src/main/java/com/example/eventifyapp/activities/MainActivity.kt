@@ -16,7 +16,10 @@ import com.example.eventifyapp.databinding.ActivityMainBinding
 import com.example.eventifyapp.databinding.LayoutNavbarBinding
 import com.example.eventifyapp.model.Event
 import com.example.eventifyapp.repository.EventRepository
+import com.example.eventifyapp.repository.UserRepository
+import com.example.eventifyapp.utils.SessionManager
 import com.example.eventifyapp.viewmodel.EventViewModel
+import com.example.eventifyapp.viewmodel.UserViewModel
 import com.example.eventifyapp.viewmodel.ViewModelFactory
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -25,35 +28,51 @@ import java.util.*
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var viewModel: EventViewModel
+    private lateinit var eventViewModel: EventViewModel
+    private lateinit var userViewModel: UserViewModel
     private lateinit var eventAdapter: EventAdapter
+    
     private var allEventsList: List<Event> = emptyList()
-    private var isGridView = false // Default List View (1 column)
+    private var isGridView = false 
+    private var currentFilter = "upcoming"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setupUserGreeting()
         setupViewModel()
         setupRecyclerView()
         setupFilterTabs()
         setupClickListeners()
         setupBottomNavigation()
+        
+        observeUserData()
         observeEvents()
-    }
-
-    private fun setupUserGreeting() {
-        val username = intent.getStringExtra("USER_NAME") ?: "Poetrysya"
-        binding.tvUsername.text = username
     }
 
     private fun setupViewModel() {
         val database = AppDatabase.getDatabase(applicationContext)
-        val repository = EventRepository(database.eventDao())
-        val factory = ViewModelFactory(eventRepository = repository)
-        viewModel = ViewModelProvider(this, factory)[EventViewModel::class.java]
+        val eventRepo = EventRepository(database.eventDao())
+        val userRepo = UserRepository(database.userDao())
+        val sessionManager = SessionManager(applicationContext)
+        
+        val factory = ViewModelFactory(
+            eventRepository = eventRepo,
+            userRepository = userRepo,
+            sessionManager = sessionManager
+        )
+        
+        eventViewModel = ViewModelProvider(this, factory)[EventViewModel::class.java]
+        userViewModel = ViewModelProvider(this, factory)[UserViewModel::class.java]
+    }
+
+    private fun observeUserData() {
+        lifecycleScope.launch {
+            userViewModel.user.collect { user ->
+                binding.tvUsername.text = if (user != null && user.username.isNotEmpty()) user.username else (user?.name ?: intent.getStringExtra("USER_NAME") ?: "Poetrysya")
+            }
+        }
     }
 
     private fun setupRecyclerView() {
@@ -77,10 +96,10 @@ class MainActivity : AppCompatActivity() {
     private fun updateRecyclerViewLayout() {
         if (isGridView) {
             binding.rvEvents.layoutManager = GridLayoutManager(this, 2)
-            binding.btnToggleLayout.setImageResource(android.R.drawable.ic_menu_agenda) // Icon for List
+            binding.btnToggleLayout.setImageResource(android.R.drawable.ic_menu_agenda)
         } else {
             binding.rvEvents.layoutManager = LinearLayoutManager(this)
-            binding.btnToggleLayout.setImageResource(android.R.drawable.ic_dialog_dialer) // Icon for Grid
+            binding.btnToggleLayout.setImageResource(android.R.drawable.ic_dialog_dialer)
         }
         eventAdapter.setLayoutMode(isGridView)
     }
@@ -102,29 +121,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateFilterUI(filter: String) {
+        currentFilter = filter
         resetTabStyle(binding.tabUpcoming)
         resetTabStyle(binding.tabToday)
         resetTabStyle(binding.tabTomorrow)
         resetTabStyle(binding.tabWeekend)
 
         when (filter) {
-            "upcoming" -> {
-                setActiveTabStyle(binding.tabUpcoming)
-                filterEvents("upcoming")
-            }
-            "today" -> {
-                setActiveTabStyle(binding.tabToday)
-                filterEvents("today")
-            }
-            "tomorrow" -> {
-                setActiveTabStyle(binding.tabTomorrow)
-                filterEvents("tomorrow")
-            }
-            "weekend" -> {
-                setActiveTabStyle(binding.tabWeekend)
-                filterEvents("weekend")
-            }
+            "upcoming" -> setActiveTabStyle(binding.tabUpcoming)
+            "today" -> setActiveTabStyle(binding.tabToday)
+            "tomorrow" -> setActiveTabStyle(binding.tabTomorrow)
+            "weekend" -> setActiveTabStyle(binding.tabWeekend)
         }
+        filterEvents(filter)
     }
 
     private fun resetTabStyle(textView: TextView) {
@@ -138,6 +147,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun filterEvents(filter: String) {
+        if (allEventsList.isEmpty()) return
+
         val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val todayStr = sdf.format(Date())
         
@@ -165,44 +176,35 @@ class MainActivity : AppCompatActivity() {
         eventAdapter.updateData(filtered)
     }
 
+    private fun observeEvents() {
+        lifecycleScope.launch {
+            eventViewModel.allEvents.collect { events ->
+                allEventsList = events
+                filterEvents(currentFilter)
+            }
+        }
+    }
+
     private fun setupBottomNavigation() {
         val navbarBinding = LayoutNavbarBinding.bind(binding.bottomNavbar.root)
         navbarBinding.navHome.setColorFilter(getColor(R.color.colorOrange))
         
         navbarBinding.navChat.setOnClickListener {
-            val intent = Intent(this, MessagesActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
-            startActivity(intent)
+            startActivity(Intent(this, MessagesActivity::class.java).apply { flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT })
             overridePendingTransition(0, 0)
         }
         navbarBinding.navNotification.setOnClickListener {
-            val intent = Intent(this, NotificationActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
-            startActivity(intent)
+            startActivity(Intent(this, NotificationActivity::class.java).apply { flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT })
             overridePendingTransition(0, 0)
         }
         navbarBinding.navProfile.setOnClickListener {
-            val intent = Intent(this, ProfileActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
-            startActivity(intent)
+            startActivity(Intent(this, ProfileActivity::class.java).apply { flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT })
             overridePendingTransition(0, 0)
-        }
-    }
-
-    private fun observeEvents() {
-        lifecycleScope.launch {
-            viewModel.allEvents.collect { events ->
-                if (events.isNotEmpty()) {
-                    allEventsList = events
-                    updateFilterUI("upcoming")
-                }
-            }
         }
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        setupUserGreeting()
     }
 }
