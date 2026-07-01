@@ -24,16 +24,12 @@ import com.example.eventifyapp.viewmodel.ViewModelFactory
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
-import android.view.View
-import com.example.eventifyapp.repository.NotificationRepository
-import com.example.eventifyapp.viewmodel.NotificationViewModel
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var eventViewModel: EventViewModel
     private lateinit var userViewModel: UserViewModel
-    private lateinit var notificationViewModel: NotificationViewModel
     private lateinit var eventAdapter: EventAdapter
     
     private var allEventsList: List<Event> = emptyList()
@@ -53,26 +49,22 @@ class MainActivity : AppCompatActivity() {
         
         observeUserData()
         observeEvents()
-        observeNotifications()
     }
 
     private fun setupViewModel() {
         val database = AppDatabase.getDatabase(applicationContext)
         val eventRepo = EventRepository(database.eventDao())
         val userRepo = UserRepository(database.userDao())
-        val notificationRepo = NotificationRepository(database.notificationDao())
         val sessionManager = SessionManager(applicationContext)
         
         val factory = ViewModelFactory(
             eventRepository = eventRepo,
             userRepository = userRepo,
-            sessionManager = sessionManager,
-            notificationRepository = notificationRepo
+            sessionManager = sessionManager
         )
         
         eventViewModel = ViewModelProvider(this, factory)[EventViewModel::class.java]
         userViewModel = ViewModelProvider(this, factory)[UserViewModel::class.java]
-        notificationViewModel = ViewModelProvider(this, factory)[NotificationViewModel::class.java]
     }
 
     private fun observeUserData() {
@@ -93,6 +85,7 @@ class MainActivity : AppCompatActivity() {
                 putExtra("EVENT_PRICE", event.price)
                 putExtra("EVENT_DESCRIPTION", event.description)
                 putExtra("EVENT_IMAGE", event.imageUrl)
+                putExtra("EVENT_REGISTRATION_URL", event.registrationUrl)
             }
             startActivity(intent)
         }
@@ -195,20 +188,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupBottomNavigation() {
         val navbarBinding = LayoutNavbarBinding.bind(binding.bottomNavbar.root)
-        
-        // Active State: Home Tab is active
-        navbarBinding.ivHomeIcon.setColorFilter(getColor(R.color.colorPrimary))
-        navbarBinding.tvHomeLabel.setTextColor(getColor(R.color.colorPrimary))
-
-        // Inactive States: Chat, Notification, Profile
-        navbarBinding.ivChatIcon.setColorFilter(getColor(R.color.gray_text))
-        navbarBinding.tvChatLabel.setTextColor(getColor(R.color.gray_text))
-
-        navbarBinding.ivNotificationIcon.setColorFilter(getColor(R.color.gray_text))
-        navbarBinding.tvNotificationLabel.setTextColor(getColor(R.color.gray_text))
-
-        navbarBinding.ivProfileIcon.setColorFilter(getColor(R.color.gray_text))
-        navbarBinding.tvProfileLabel.setTextColor(getColor(R.color.gray_text))
+        navbarBinding.navHome.setColorFilter(getColor(R.color.colorOrange))
         
         navbarBinding.navChat.setOnClickListener {
             startActivity(Intent(this, MessagesActivity::class.java).apply { flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT })
@@ -227,26 +207,5 @@ class MainActivity : AppCompatActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-    }
-
-    private fun observeNotifications() {
-        lifecycleScope.launch {
-            notificationViewModel.unreadCount.collect { count ->
-                val navbarBinding = LayoutNavbarBinding.bind(binding.bottomNavbar.root)
-                if (count > 0) {
-                    navbarBinding.tvNotificationBadge.visibility = View.VISIBLE
-                    navbarBinding.tvNotificationBadge.text = count.toString()
-                } else {
-                    navbarBinding.tvNotificationBadge.visibility = View.GONE
-                }
-            }
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        if (::notificationViewModel.isInitialized) {
-            notificationViewModel.loadUnreadCount()
-        }
     }
 }

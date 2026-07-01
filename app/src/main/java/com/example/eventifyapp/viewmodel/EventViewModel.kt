@@ -116,15 +116,6 @@ class EventViewModel(private val repository: EventRepository) : ViewModel() {
         }
     }
 
-    suspend fun toggleJoin(eventId: Long, currentStatus: Boolean) {
-        try {
-            repository.updateJoinedStatus(eventId, !currentStatus)
-            loadAllEvents()
-        } catch (e: Exception) {
-            _error.value = e.message
-        }
-    }
-
     fun clearError() {
         _error.value = null
     }

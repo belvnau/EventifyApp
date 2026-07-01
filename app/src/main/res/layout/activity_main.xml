@@ -6,8 +6,7 @@
     android:id="@+id/rootLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/notificatio"
-    android:clipToOutline="true">
+    android:background="@color/colorBackground">
 
     <!-- Header Navy (Tetap di Atas) -->
     <LinearLayout
@@ -117,69 +116,6 @@
             android:orientation="vertical"
             android:paddingTop="16dp">
 
-            <HorizontalScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:scrollbars="none"
-                android:paddingStart="20dp"
-                android:paddingEnd="20dp"
-                android:layout_marginBottom="16dp">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/tabUpcoming"
-                        android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:text="Upcoming"
-                        android:gravity="center"
-                        android:textSize="13sp"
-                        android:textColor="@color/white"
-                        android:background="@drawable/bg_button"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp"
-                        android:layout_marginEnd="8dp" />
-
-                    <TextView
-                        android:id="@+id/tabToday"
-                        android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:text="Today"
-                        android:gravity="center"
-                        android:textSize="13sp"
-                        android:textColor="@color/colorTextSecondary"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp"
-                        android:layout_marginEnd="8dp" />
-
-                    <TextView
-                        android:id="@+id/tabTomorrow"
-                        android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:text="Tomorrow"
-                        android:gravity="center"
-                        android:textSize="13sp"
-                        android:textColor="@color/colorTextSecondary"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp"
-                        android:layout_marginEnd="8dp" />
-
-                    <TextView
-                        android:id="@+id/tabWeekend"
-                        android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:text="Weekend"
-                        android:gravity="center"
-                        android:textSize="13sp"
-                        android:textColor="@color/colorTextSecondary"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp" />
-                </LinearLayout>
-            </HorizontalScrollView>
-
             <!-- Kategori Ikon -->
             <LinearLayout
                 android:layout_width="match_parent"
@@ -280,6 +216,71 @@
                         android:textColor="@color/colorTextSecondary" />
                 </LinearLayout>
             </LinearLayout>
+
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tabUpcoming"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="Upcoming"
+                        android:gravity="center"
+                        android:textSize="13sp"
+                        android:textColor="@color/white"
+                        android:background="@drawable/bg_button"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:layout_marginEnd="8dp" />
+
+                    <TextView
+                        android:id="@+id/tabToday"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="Today"
+                        android:gravity="center"
+                        android:textSize="13sp"
+                        android:textColor="@color/colorTextSecondary"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:layout_marginEnd="8dp" />
+
+                    <TextView
+                        android:id="@+id/tabTomorrow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="Tomorrow"
+                        android:gravity="center"
+                        android:textSize="13sp"
+                        android:textColor="@color/colorTextSecondary"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:layout_marginEnd="8dp" />
+
+                    <TextView
+                        android:id="@+id/tabWeekend"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="Weekend"
+                        android:gravity="center"
+                        android:textSize="13sp"
+                        android:textColor="@color/colorTextSecondary"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp" />
+                </LinearLayout>
+            </HorizontalScrollView>
+
 
             <TextView
                 android:id="@+id/tvSectionTitle"

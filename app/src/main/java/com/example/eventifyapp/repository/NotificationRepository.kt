@@ -27,9 +27,6 @@ class NotificationRepository(private val notificationDao: NotificationDao) {
     suspend fun markAsRead(notificationId: Long) =
         notificationDao.markAsRead(notificationId)
 
-    suspend fun markAllAsRead() =
-        notificationDao.markAllAsRead()
-
     suspend fun markAllAsReadByEvent(eventId: Long) =
         notificationDao.markAllAsReadByEvent(eventId)
 
@@ -37,7 +34,4 @@ class NotificationRepository(private val notificationDao: NotificationDao) {
 
     suspend fun deleteOldNotifications(timestamp: Long) =
         notificationDao.deleteOldNotifications(timestamp)
-
-    suspend fun deleteAllNotifications() =
-        notificationDao.deleteAllNotifications()
 }

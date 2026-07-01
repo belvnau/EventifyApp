@@ -71,18 +71,6 @@ class NotificationViewModel(private val repository: NotificationRepository) : Vi
         }
     }
 
-    fun markAllAsRead() {
-        viewModelScope.launch {
-            try {
-                repository.markAllAsRead()
-                loadUnreadCount()
-                loadNotifications()
-            } catch (e: Exception) {
-                _error.value = e.message
-            }
-        }
-    }
-
     suspend fun deleteNotification(notification: NotificationItem) {
         try {
             repository.deleteNotification(notification)
@@ -112,17 +100,6 @@ class NotificationViewModel(private val repository: NotificationRepository) : Vi
                 _error.value = e.message
             } finally {
                 _isLoading.value = false
-            }
-        }
-    }
-
-    fun deleteAllNotifications() {
-        viewModelScope.launch {
-            try {
-                repository.deleteAllNotifications()
-                loadUnreadCount()
-            } catch (e: Exception) {
-                _error.value = e.message
             }
         }
     }

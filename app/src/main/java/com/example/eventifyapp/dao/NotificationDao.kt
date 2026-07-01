@@ -27,9 +27,6 @@ interface NotificationDao {
     @Query("UPDATE notifications SET isRead = 1 WHERE id = :notificationId")
     suspend fun markAsRead(notificationId: Long)
 
-    @Query("UPDATE notifications SET isRead = 1")
-    suspend fun markAllAsRead()
-
     @Query("UPDATE notifications SET isRead = 1 WHERE eventId = :eventId")
     suspend fun markAllAsReadByEvent(eventId: Long)
 
@@ -38,7 +35,4 @@ interface NotificationDao {
 
     @Query("DELETE FROM notifications WHERE timestamp < :timestamp")
     suspend fun deleteOldNotifications(timestamp: Long)
-
-    @Query("DELETE FROM notifications")
-    suspend fun deleteAllNotifications()
 }

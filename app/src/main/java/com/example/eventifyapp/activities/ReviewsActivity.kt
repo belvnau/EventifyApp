@@ -15,11 +15,8 @@ import com.example.eventifyapp.adapters.ReviewAdapter
 import com.example.eventifyapp.database.AppDatabase
 import com.example.eventifyapp.databinding.ActivityReviewsBinding
 import com.example.eventifyapp.model.Review
-import com.example.eventifyapp.model.NotificationItem
 import com.example.eventifyapp.repository.ReviewRepository
-import com.example.eventifyapp.repository.NotificationRepository
 import com.example.eventifyapp.viewmodel.ReviewViewModel
-import com.example.eventifyapp.viewmodel.NotificationViewModel
 import com.example.eventifyapp.viewmodel.ViewModelFactory
 import kotlinx.coroutines.launch
 
@@ -27,11 +24,8 @@ class ReviewsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityReviewsBinding
     private lateinit var viewModel: ReviewViewModel
-    private lateinit var notificationViewModel: NotificationViewModel
     private lateinit var reviewAdapter: ReviewAdapter
-    
     private var eventId: Long = -1
-    private var eventTitle: String = "Event"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +33,6 @@ class ReviewsActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         eventId = intent.getLongExtra("EVENT_ID", -1)
-        eventTitle = intent.getStringExtra("EVENT_TITLE") ?: "Event"
 
         setupViewModel()
         setupRecyclerView()
@@ -55,13 +48,8 @@ class ReviewsActivity : AppCompatActivity() {
     private fun setupViewModel() {
         val database = AppDatabase.getDatabase(applicationContext)
         val repository = ReviewRepository(database.reviewDao())
-        val notificationRepo = NotificationRepository(database.notificationDao())
-        val factory = ViewModelFactory(
-            reviewRepository = repository,
-            notificationRepository = notificationRepo
-        )
+        val factory = ViewModelFactory(reviewRepository = repository)
         viewModel = ViewModelProvider(this, factory)[ReviewViewModel::class.java]
-        notificationViewModel = ViewModelProvider(this, factory)[NotificationViewModel::class.java]
     }
 
     private fun setupRecyclerView() {
@@ -124,17 +112,6 @@ class ReviewsActivity : AppCompatActivity() {
                             comment = comment
                         )
                     )
-
-                    // CRUD: Create notification
-                    notificationViewModel.addNotification(
-                        NotificationItem(
-                            title = "Ulasan Terkirim",
-                            message = "Terima kasih telah memberikan ulasan untuk: $eventTitle",
-                            type = "event",
-                            eventId = eventId
-                        )
-                    )
-
                     Toast.makeText(this@ReviewsActivity, "Review ditambahkan", Toast.LENGTH_SHORT).show()
                 }
             }
