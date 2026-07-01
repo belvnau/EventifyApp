@@ -9,32 +9,42 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.eventifyapp.dao.EventDao
 import com.example.eventifyapp.dao.MessageDao
 import com.example.eventifyapp.dao.NotificationDao
+import com.example.eventifyapp.dao.ReviewDao
 import com.example.eventifyapp.model.Event
 import com.example.eventifyapp.model.Message
 import com.example.eventifyapp.model.NotificationItem
-import com.example.eventifyapp.dao.ReviewDao
 import com.example.eventifyapp.model.Review
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Database(
-    entities = [Event::class, Message::class, NotificationItem::class, Review::class],
-    version = 2,
+    entities = [
+        Event::class,
+        Message::class,
+        NotificationItem::class,
+        Review::class
+    ],
+    version = 3,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
+
     abstract fun eventDao(): EventDao
     abstract fun messageDao(): MessageDao
     abstract fun notificationDao(): NotificationDao
     abstract fun reviewDao(): ReviewDao
+
     companion object {
+
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
         fun getDatabase(context: Context): AppDatabase {
+
             return INSTANCE ?: synchronized(this) {
+
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
@@ -42,24 +52,41 @@ abstract class AppDatabase : RoomDatabase() {
                 )
                     .fallbackToDestructiveMigration()
                     .addCallback(object : Callback() {
+
                         override fun onCreate(db: SupportSQLiteDatabase) {
                             super.onCreate(db)
-                            INSTANCE?.let { database ->
-                                CoroutineScope(Dispatchers.IO).launch {
-                                    populateDatabase(database)
+
+                            CoroutineScope(Dispatchers.IO).launch {
+
+                                INSTANCE?.let {
+
+                                    populateDatabase(it)
+
                                 }
+
                             }
+
                         }
+
                     })
                     .build()
+
                 INSTANCE = instance
+
                 instance
+
             }
+
         }
 
         private suspend fun populateDatabase(database: AppDatabase) {
-            val events = DataSeeder.getDummyEvents()
-            database.eventDao().insertEvents(events)
+
+            database.eventDao().insertEvents(
+                DataSeeder.getDummyEvents()
+            )
+
         }
+
     }
+
 }

@@ -16,7 +16,7 @@ import com.example.eventifyapp.viewmodel.NotificationViewModel
 import com.example.eventifyapp.viewmodel.ViewModelFactory
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
 
 class DetailEventActivity : AppCompatActivity() {
 
@@ -26,138 +26,164 @@ class DetailEventActivity : AppCompatActivity() {
     private lateinit var notificationViewModel: NotificationViewModel
 
     private var eventId: Long = -1
-    private var eventTitle: String = ""
+    private var eventTitle = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         binding = ActivityDetailEventBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         setupViewModel()
-        getDataFromIntent()
-        bindDataToViews()
+        getIntentData()
+        bindData()
         setupToolbar()
         setupInterestedButton()
-        setupSeeReviewsButton()
+        setupReviewButton()
     }
 
     private fun setupViewModel() {
+
         val database = AppDatabase.getDatabase(applicationContext)
-        val eventRepository = EventRepository(database.eventDao())
-        val notificationRepository = NotificationRepository(database.notificationDao())
+
+        val eventRepository =
+            EventRepository(database.eventDao())
+
+        val notificationRepository =
+            NotificationRepository(database.notificationDao())
 
         val factory = ViewModelFactory(
             eventRepository = eventRepository,
             notificationRepository = notificationRepository
         )
 
-        eventViewModel = ViewModelProvider(this, factory)[EventViewModel::class.java]
-        notificationViewModel = ViewModelProvider(this, factory)[NotificationViewModel::class.java]
+        eventViewModel =
+            ViewModelProvider(this, factory)[EventViewModel::class.java]
+
+        notificationViewModel =
+            ViewModelProvider(this, factory)[NotificationViewModel::class.java]
+
     }
 
-    private fun getDataFromIntent() {
-        eventId = intent.getLongExtra("EVENT_ID", -1)
-        eventTitle = intent.getStringExtra("EVENT_TITLE") ?: "Detail Event"
+    private fun getIntentData() {
+
+        eventId =
+            intent.getLongExtra("EVENT_ID", -1)
+
+        eventTitle =
+            intent.getStringExtra("EVENT_TITLE") ?: ""
+
     }
 
-    private fun bindDataToViews() {
-        val date = intent.getStringExtra("EVENT_DATE") ?: "-"
-        val location = intent.getStringExtra("EVENT_LOCATION") ?: "-"
-        val price = intent.getStringExtra("EVENT_PRICE") ?: "-"
-        val description = intent.getStringExtra("EVENT_DESCRIPTION") ?: "-"
-        val imageUrl = intent.getStringExtra("EVENT_IMAGE") ?: ""
+    private fun bindData() {
 
         binding.tvDetailTitle.text = eventTitle
-        binding.tvDetailLocation.text = location
-        binding.tvDetailDate.text = formatDate(date)
-        binding.tvDetailPrice.text = price
-        binding.tvDetailDesc.text = description
-        binding.tvDetailFullAddress.text = "Alamat lengkap: $location"
-        
-        // Cek apakah tvParticipantCount ada di binding sebelum set text
-        // (ID ini ada di layout versi modern yang kita buat)
-        try {
-            val participantView = binding::class.java.getMethod("getTvParticipantCount").invoke(binding) as? android.widget.TextView
-            participantView?.text = "180 Participants"
-        } catch (e: Exception) {
-            // Abaikan jika tidak ada
-        }
 
-        setEventImage(imageUrl)
+        binding.tvDetailLocation.text =
+            intent.getStringExtra("EVENT_LOCATION")
+
+        binding.tvDetailPrice.text =
+            intent.getStringExtra("EVENT_PRICE")
+
+        binding.tvDetailDesc.text =
+            intent.getStringExtra("EVENT_DESCRIPTION")
+
+        binding.tvDetailDate.text =
+            formatDate(
+                intent.getStringExtra("EVENT_DATE") ?: ""
+            )
+
     }
 
     private fun setupToolbar() {
-        // Tombol back di toolbar agar benar-benar kembali (finish)
+
         binding.toolbarDetail.setNavigationOnClickListener {
+
             finish()
+
         }
+
     }
 
-    private fun formatDate(dateString: String): String {
+    private fun formatDate(date: String): String {
+
         return try {
-            val parser = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            val formatter = SimpleDateFormat("d MMM yyyy", Locale.getDefault())
-            val date = parser.parse(dateString)
-            if (date != null) formatter.format(date) else dateString
-        } catch (e: Exception) {
-            dateString
-        }
-    }
 
-    private fun setEventImage(imageUrl: String) {
-        val resourceId = resources.getIdentifier(imageUrl, "drawable", packageName)
-        if (resourceId != 0) {
-            binding.ivDetailImage.setImageResource(resourceId)
-        } else {
-            val defaultResId = resources.getIdentifier("img_artket", "drawable", packageName)
-            binding.ivDetailImage.setImageResource(defaultResId)
+            val parser =
+                SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+            val formatter =
+                SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+
+            formatter.format(parser.parse(date)!!)
+
+        } catch (e: Exception) {
+
+            date
+
         }
+
     }
 
     private fun setupInterestedButton() {
+
         binding.btnInterested.setOnClickListener {
-            if (eventId == -1L) {
-                Toast.makeText(this, "Event tidak ditemukan", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+
+            lifecycleScope.launch {
+
+                val event =
+                    eventViewModel.getEventById(eventId)
+
+                if (event != null) {
+
+                    eventViewModel.toggleFavorite(
+                        event.id,
+                        event.isFavorite
+                    )
+
+                    notificationViewModel.addNotification(
+
+                        NotificationItem(
+
+                            title = "Event Tertarik",
+
+                            message = "Kamu tertarik pada event ${event.title}",
+
+                            type = "event",
+
+                            eventId = event.id
+
+                        )
+
+                    )
+
+                    Toast.makeText(
+                        this@DetailEventActivity,
+                        "Berhasil ditambahkan ke notifikasi",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                }
+
             }
-            markEventAsInterested()
+
         }
+
     }
 
-    private fun markEventAsInterested() {
-        lifecycleScope.launch {
-            val event = eventViewModel.getEventById(eventId)
+    private fun setupReviewButton() {
 
-            if (event == null) {
-                Toast.makeText(this@DetailEventActivity, "Gagal memuat event", Toast.LENGTH_SHORT).show()
-                return@launch
-            }
-
-            eventViewModel.toggleFavorite(event.id, event.isFavorite)
-
-            notificationViewModel.addNotification(
-                NotificationItem(
-                    title = "Interested",
-                    message = "Kamu tertarik pada event ini!",
-                    type = "event",
-                    eventId = event.id
-                )
-            )
-
-            Toast.makeText(
-                this@DetailEventActivity,
-                "Kamu tertarik pada event ini!",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-    }
-
-    private fun setupSeeReviewsButton() {
         binding.tvSeeReviews.setOnClickListener {
-            val intent = Intent(this, ReviewsActivity::class.java).apply {
-                putExtra("EVENT_ID", eventId)
-            }
+
+            val intent =
+                Intent(this, ReviewsActivity::class.java)
+
+            intent.putExtra("EVENT_ID", eventId)
+
             startActivity(intent)
+
         }
+
     }
+
 }
