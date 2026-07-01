@@ -104,6 +104,17 @@ class NotificationViewModel(private val repository: NotificationRepository) : Vi
         }
     }
 
+    fun deleteAllNotifications() {
+        viewModelScope.launch {
+            try {
+                repository.deleteAllNotifications()
+                loadUnreadCount()
+            } catch (e: Exception) {
+                _error.value = e.message
+            }
+        }
+    }
+
     fun clearError() {
         _error.value = null
     }

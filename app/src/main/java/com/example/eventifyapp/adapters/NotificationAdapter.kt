@@ -12,7 +12,8 @@ import java.util.Locale
 
 class NotificationAdapter(
     private var notifications: List<NotificationItem> = emptyList(),
-    private val onItemClick: (NotificationItem) -> Unit
+    private val onItemClick: (NotificationItem) -> Unit,
+    private val onDeleteClick: (NotificationItem) -> Unit
 ) : RecyclerView.Adapter<NotificationAdapter.NotificationViewHolder>() {
 
     class NotificationViewHolder(val binding: ItemNotificationBinding) : RecyclerView.ViewHolder(binding.root)
@@ -70,6 +71,10 @@ class NotificationAdapter(
 
         holder.itemView.setOnClickListener {
             onItemClick(notification)
+        }
+
+        holder.binding.btnDeleteNotification.setOnClickListener {
+            onDeleteClick(notification)
         }
     }
 

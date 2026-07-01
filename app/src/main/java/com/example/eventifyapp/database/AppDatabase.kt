@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 
 @Database(
     entities = [Event::class, Message::class, NotificationItem::class, Review::class, User::class],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -68,6 +68,46 @@ abstract class AppDatabase : RoomDatabase() {
                 password = "password123",
                 bio = "Event enthusiast and creative designer.",
                 location = "Jakarta, ID"
+            ))
+
+            // Seed dummy messages
+            database.messageDao().insertMessage(Message(
+                senderName = "Rian",
+                senderEmail = "rian@gmail.com",
+                message = "Halo, besok ada yang berangkat bareng ke Tech Conference 2026?",
+                timestamp = System.currentTimeMillis() - 7200000,
+                isRead = false
+            ))
+            database.messageDao().insertMessage(Message(
+                senderName = "Sarah",
+                senderEmail = "sarah@gmail.com",
+                message = "Kak, mau tanya untuk K-Pop Picnic nanti registrasinya di mana ya?",
+                timestamp = System.currentTimeMillis() - 3600000,
+                isRead = false
+            ))
+
+            // Seed dummy notifications
+            database.notificationDao().insertNotification(NotificationItem(
+                title = "Welcome to Eventify",
+                message = "Selamat datang di EventifyApp! Temukan event-event menarik di sekitarmu.",
+                type = "system",
+                timestamp = System.currentTimeMillis() - 86400000,
+                isRead = false
+            ))
+            database.notificationDao().insertNotification(NotificationItem(
+                title = "Tech Conference 2026",
+                message = "Event 'Tech Conference 2026' yang kamu ikuti akan berlangsung dalam 2 minggu.",
+                type = "event",
+                timestamp = System.currentTimeMillis() - 43200000,
+                isRead = false,
+                eventId = 1
+            ))
+            database.notificationDao().insertNotification(NotificationItem(
+                title = "Pesan Baru",
+                message = "Sarah: Kak, mau tanya untuk K-Pop Picnic nanti...",
+                type = "message",
+                timestamp = System.currentTimeMillis() - 3600000,
+                isRead = false
             ))
         }
     }

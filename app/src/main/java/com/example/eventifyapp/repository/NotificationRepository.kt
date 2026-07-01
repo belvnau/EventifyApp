@@ -34,4 +34,7 @@ class NotificationRepository(private val notificationDao: NotificationDao) {
 
     suspend fun deleteOldNotifications(timestamp: Long) =
         notificationDao.deleteOldNotifications(timestamp)
+
+    suspend fun deleteAllNotifications() =
+        notificationDao.deleteAllNotifications()
 }

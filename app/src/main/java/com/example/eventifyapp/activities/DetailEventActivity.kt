@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.example.eventifyapp.R
 import com.example.eventifyapp.database.AppDatabase
 import com.example.eventifyapp.databinding.ActivityDetailEventBinding
 import com.example.eventifyapp.model.NotificationItem
@@ -16,7 +17,8 @@ import com.example.eventifyapp.viewmodel.NotificationViewModel
 import com.example.eventifyapp.viewmodel.ViewModelFactory
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
+import java.util.Date
 
 class DetailEventActivity : AppCompatActivity() {
 
@@ -38,7 +40,9 @@ class DetailEventActivity : AppCompatActivity() {
         bindDataToViews()
         setupToolbar()
         setupInterestedButton()
+        setupJoinButton()
         setupSeeReviewsButton()
+        loadEventDetails()
     }
 
     private fun setupViewModel() {
@@ -74,20 +78,60 @@ class DetailEventActivity : AppCompatActivity() {
         binding.tvDetailDesc.text = description
         binding.tvDetailFullAddress.text = "Alamat lengkap: $location"
         
-        // Cek apakah tvParticipantCount ada di binding sebelum set text
-        // (ID ini ada di layout versi modern yang kita buat)
         try {
             val participantView = binding::class.java.getMethod("getTvParticipantCount").invoke(binding) as? android.widget.TextView
             participantView?.text = "180 Participants"
         } catch (e: Exception) {
-            // Abaikan jika tidak ada
+            // Ignore
         }
 
         setEventImage(imageUrl)
     }
 
+    private fun loadEventDetails() {
+        lifecycleScope.launch {
+            if (eventId == -1L) return@launch
+            val event = eventViewModel.getEventById(eventId)
+            if (event != null) {
+                // Fallback: If not opened via MainActivity, fill layout with DB values
+                if (!intent.hasExtra("EVENT_TITLE")) {
+                    eventTitle = event.title
+                    binding.tvDetailTitle.text = event.title
+                    binding.tvDetailLocation.text = event.location
+                    binding.tvDetailDate.text = formatDate(event.date)
+                    binding.tvDetailPrice.text = event.price
+                    binding.tvDetailDesc.text = event.description
+                    binding.tvDetailFullAddress.text = "Alamat lengkap: ${event.location}"
+                    setEventImage(event.imageUrl)
+                }
+
+                // Update button states
+                updateButtonStates(event.isFavorite, event.isJoined)
+            }
+        }
+    }
+
+    private fun updateButtonStates(isFavorite: Boolean, isJoined: Boolean) {
+        // Interested / Favorite Button
+        if (isFavorite) {
+            binding.btnInterested.setBackgroundColor(getColor(R.color.colorOrange))
+            binding.btnInterested.setTextColor(getColor(R.color.white))
+        } else {
+            binding.btnInterested.setBackgroundColor(getColor(R.color.colorOrangeSoft))
+            binding.btnInterested.setTextColor(getColor(R.color.colorOrange))
+        }
+
+        // Join Button
+        if (isJoined) {
+            binding.btnJoin.text = "Joined"
+            binding.btnJoin.setBackgroundColor(getColor(R.color.colorTextSecondary))
+        } else {
+            binding.btnJoin.text = "Join Now"
+            binding.btnJoin.setBackgroundColor(getColor(R.color.colorNavyDark))
+        }
+    }
+
     private fun setupToolbar() {
-        // Tombol back di toolbar agar benar-benar kembali (finish)
         binding.toolbarDetail.setNavigationOnClickListener {
             finish()
         }
@@ -120,35 +164,69 @@ class DetailEventActivity : AppCompatActivity() {
                 Toast.makeText(this, "Event tidak ditemukan", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            markEventAsInterested()
+            toggleInterestedState()
         }
     }
 
-    private fun markEventAsInterested() {
+    private fun toggleInterestedState() {
         lifecycleScope.launch {
-            val event = eventViewModel.getEventById(eventId)
-
-            if (event == null) {
-                Toast.makeText(this@DetailEventActivity, "Gagal memuat event", Toast.LENGTH_SHORT).show()
-                return@launch
-            }
-
+            val event = eventViewModel.getEventById(eventId) ?: return@launch
+            val nextStatus = !event.isFavorite
+            
             eventViewModel.toggleFavorite(event.id, event.isFavorite)
-
-            notificationViewModel.addNotification(
-                NotificationItem(
-                    title = "Interested",
-                    message = "Kamu tertarik pada event ini!",
-                    type = "event",
-                    eventId = event.id
+            
+            // Create notification if favorited
+            if (nextStatus) {
+                notificationViewModel.addNotification(
+                    NotificationItem(
+                        title = "Event Terfavorit",
+                        message = "Kamu menyukai event: ${event.title}",
+                        type = "event",
+                        eventId = event.id
+                    )
                 )
-            )
+                Toast.makeText(this@DetailEventActivity, "Ditambahkan ke Saved!", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this@DetailEventActivity, "Dihapus dari Saved", Toast.LENGTH_SHORT).show()
+            }
+            
+            loadEventDetails()
+        }
+    }
 
-            Toast.makeText(
-                this@DetailEventActivity,
-                "Kamu tertarik pada event ini!",
-                Toast.LENGTH_SHORT
-            ).show()
+    private fun setupJoinButton() {
+        binding.btnJoin.setOnClickListener {
+            if (eventId == -1L) {
+                Toast.makeText(this, "Event tidak ditemukan", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            toggleJoinState()
+        }
+    }
+
+    private fun toggleJoinState() {
+        lifecycleScope.launch {
+            val event = eventViewModel.getEventById(eventId) ?: return@launch
+            val nextStatus = !event.isJoined
+            
+            eventViewModel.toggleJoin(event.id, event.isJoined)
+            
+            // Create notification if joined
+            if (nextStatus) {
+                notificationViewModel.addNotification(
+                    NotificationItem(
+                        title = "Bergabung ke Event",
+                        message = "Kamu telah mendaftar ke event: ${event.title}",
+                        type = "event",
+                        eventId = event.id
+                    )
+                )
+                Toast.makeText(this@DetailEventActivity, "Berhasil bergabung ke event!", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this@DetailEventActivity, "Batal bergabung dari event", Toast.LENGTH_SHORT).show()
+            }
+            
+            loadEventDetails()
         }
     }
 
@@ -156,6 +234,7 @@ class DetailEventActivity : AppCompatActivity() {
         binding.tvSeeReviews.setOnClickListener {
             val intent = Intent(this, ReviewsActivity::class.java).apply {
                 putExtra("EVENT_ID", eventId)
+                putExtra("EVENT_TITLE", eventTitle)
             }
             startActivity(intent)
         }

@@ -33,6 +33,9 @@ interface EventDao {
     @Query("UPDATE events SET isFavorite = :isFavorite WHERE id = :eventId")
     suspend fun updateFavoriteStatus(eventId: Long, isFavorite: Boolean)
 
+    @Query("UPDATE events SET isJoined = :isJoined WHERE id = :eventId")
+    suspend fun updateJoinedStatus(eventId: Long, isJoined: Boolean)
+
     @Query("SELECT * FROM events WHERE isFavorite = 1")
     fun getFavoriteEvents(): Flow<List<Event>>
 

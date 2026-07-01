@@ -70,5 +70,18 @@
         android:layout_width="8dp"
         android:layout_height="8dp"
         android:background="@drawable/bg_dot_unread"
-        android:visibility="gone" />
+        android:visibility="gone"
+        android:layout_marginEnd="8dp" />
+
+    <!-- Delete single notification button -->
+    <ImageButton
+        android:id="@+id/btnDeleteNotification"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@android:drawable/ic_menu_delete"
+        app:tint="@color/colorTextSecondary"
+        android:contentDescription="Delete Notification"
+        android:focusable="false"
+        android:clickable="true" />
 </LinearLayout>

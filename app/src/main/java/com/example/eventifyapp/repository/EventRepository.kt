@@ -28,5 +28,9 @@ class EventRepository(private val eventDao: EventDao) {
         eventDao.updateFavoriteStatus(eventId, !currentStatus)
     }
 
+    suspend fun updateJoinedStatus(eventId: Long, isJoined: Boolean) {
+        eventDao.updateJoinedStatus(eventId, isJoined)
+    }
+
     fun getFavoriteEvents(): Flow<List<Event>> = eventDao.getFavoriteEvents()
 }

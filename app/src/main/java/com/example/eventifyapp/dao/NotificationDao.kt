@@ -35,4 +35,7 @@ interface NotificationDao {
 
     @Query("DELETE FROM notifications WHERE timestamp < :timestamp")
     suspend fun deleteOldNotifications(timestamp: Long)
+
+    @Query("DELETE FROM notifications")
+    suspend fun deleteAllNotifications()
 }
