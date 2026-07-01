@@ -1,6 +1,5 @@
 package com.example.eventifyapp.activities
 
-import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.EditText
@@ -40,6 +39,10 @@ class ReviewsActivity : AppCompatActivity() {
         setupAddReviewButton()
         setupBottomNavigation()
         observeReviews()
+
+        binding.btnBack.setOnClickListener {
+            finish()
+        }
 
         if (eventId != -1L) {
             viewModel.loadReviews(eventId)
@@ -85,8 +88,7 @@ class ReviewsActivity : AppCompatActivity() {
         val rbRating = dialogView.findViewById<RatingBar>(R.id.rbDialogRating)
         val etComment = dialogView.findViewById<EditText>(R.id.etReviewComment)
 
-        AlertDialog.Builder(this)
-            .setTitle("Tambah Review")
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
             .setView(dialogView)
             .setPositiveButton("Kirim") { _, _ ->
                 val name = etName.text.toString().trim()

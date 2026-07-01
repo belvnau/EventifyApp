@@ -9,6 +9,7 @@ data class Message(
     val id: Long = 0,
     val senderName: String,
     val senderEmail: String,
+    val receiverEmail: String = "",
     val message: String,
     val timestamp: Long = System.currentTimeMillis(),
     val isRead: Boolean = false

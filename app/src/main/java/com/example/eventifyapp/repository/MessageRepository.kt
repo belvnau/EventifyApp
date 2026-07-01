@@ -21,9 +21,12 @@ class MessageRepository(private val messageDao: MessageDao) {
 
     fun getUnreadCount(): Flow<Int> = messageDao.getUnreadCount()
 
-    // Baru
-    fun getLatestMessagePerSender(): Flow<List<Message>> = messageDao.getLatestMessagePerSender()
+    fun getLatestMessagePerSender(currentUserEmail: String): Flow<List<Message>> = 
+        messageDao.getLatestMessagePerSender(currentUserEmail)
 
-    // Baru
-    fun getUnreadConversations(): Flow<List<Message>> = messageDao.getUnreadConversations()
+    fun getUnreadConversations(currentUserEmail: String): Flow<List<Message>> = 
+        messageDao.getUnreadConversations(currentUserEmail)
+
+    fun getChatMessages(contactEmail: String, currentUserEmail: String): Flow<List<Message>> =
+        messageDao.getChatMessages(contactEmail, currentUserEmail)
 }

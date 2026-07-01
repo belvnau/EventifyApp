@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 
 @Database(
     entities = [Event::class, Message::class, NotificationItem::class, Review::class],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -44,9 +44,17 @@ abstract class AppDatabase : RoomDatabase() {
                     .addCallback(object : Callback() {
                         override fun onCreate(db: SupportSQLiteDatabase) {
                             super.onCreate(db)
+                            // Use the instance being built
+                        }
+                        
+                        override fun onOpen(db: SupportSQLiteDatabase) {
+                            super.onOpen(db)
                             INSTANCE?.let { database ->
                                 CoroutineScope(Dispatchers.IO).launch {
-                                    populateDatabase(database)
+                                    val eventCount = database.eventDao().getEventCount()
+                                    if (eventCount == 0) {
+                                        populateDatabase(database)
+                                    }
                                 }
                             }
                         }
@@ -60,6 +68,12 @@ abstract class AppDatabase : RoomDatabase() {
         private suspend fun populateDatabase(database: AppDatabase) {
             val events = DataSeeder.getDummyEvents()
             database.eventDao().insertEvents(events)
+
+            // Seed dummy messages for default user
+            val dummyMessages = DataSeeder.getDummyMessages("nasywa@example.com")
+            for (message in dummyMessages) {
+                database.messageDao().insertMessage(message)
+            }
         }
     }
 }

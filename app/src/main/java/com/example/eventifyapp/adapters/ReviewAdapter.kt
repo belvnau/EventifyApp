@@ -30,7 +30,11 @@ class ReviewAdapter(
         holder.binding.tvReviewComment.text = review.comment
         holder.binding.rbReviewRating.rating = review.rating
 
-        val sdf = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault())
+        // Set initial
+        val firstLetter = review.reviewerName.firstOrNull()?.uppercase() ?: "U"
+        holder.binding.tvAvatarInitial.text = firstLetter
+
+        val sdf = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
         holder.binding.tvReviewDate.text = sdf.format(Date(review.timestamp))
     }
 

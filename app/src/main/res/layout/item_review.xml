@@ -1,51 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="12dp"
-    android:background="@color/white"
-    android:layout_marginBottom="8dp">
+    android:layout_marginBottom="12dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp"
+    app:strokeWidth="0dp"
+    app:cardBackgroundColor="@color/colorSurface">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:padding="16dp">
+
+        <!-- Avatar Circle -->
+        <View
+            android:id="@+id/viewAvatar"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_circle_orange"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvAvatarInitial"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="@id/viewAvatar"
+            app:layout_constraintEnd_toEndOf="@id/viewAvatar"
+            app:layout_constraintStart_toStartOf="@id/viewAvatar"
+            app:layout_constraintTop_toTopOf="@id/viewAvatar"
+            android:text="U" />
 
         <TextView
             android:id="@+id/tvReviewerName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textStyle="bold"
-            android:textColor="#0D1B2A"
-            android:textSize="15sp" />
+            android:layout_marginStart="12dp"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="@color/colorTextPrimary"
+            android:textSize="16sp"
+            android:text="User Name"
+            app:layout_constraintEnd_toStartOf="@id/rbReviewRating"
+            app:layout_constraintStart_toEndOf="@id/viewAvatar"
+            app:layout_constraintTop_toTopOf="@id/viewAvatar" />
+
+        <TextView
+            android:id="@+id/tvReviewDate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:textColor="@color/colorTextSecondary"
+            android:textSize="12sp"
+            android:text="12 Oct 2023"
+            app:layout_constraintEnd_toStartOf="@id/rbReviewRating"
+            app:layout_constraintStart_toEndOf="@id/viewAvatar"
+            app:layout_constraintTop_toBottomOf="@id/tvReviewerName" />
 
         <RatingBar
             android:id="@+id/rbReviewRating"
             style="?android:attr/ratingBarStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:isIndicator="true"
             android:numStars="5"
+            android:progressTint="@color/colorStar"
+            android:rating="4.5"
             android:stepSize="0.5"
-            android:isIndicator="true" />
-    </LinearLayout>
+            app:layout_constraintBottom_toBottomOf="@id/viewAvatar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/viewAvatar" />
 
-    <TextView
-        android:id="@+id/tvReviewComment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:textColor="#444444"
-        android:textSize="13sp" />
+        <View
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="12dp"
+            android:background="@color/colorDivider"
+            app:layout_constraintTop_toBottomOf="@id/viewAvatar" />
 
-    <TextView
-        android:id="@+id/tvReviewDate"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:textColor="#999999"
-        android:textSize="11sp" />
-</LinearLayout>
+        <TextView
+            android:id="@+id/tvReviewComment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:lineSpacingExtra="4dp"
+            android:textColor="@color/colorTextPrimary"
+            android:textSize="14sp"
+            android:text="Komentar ulasan di sini..."
+            app:layout_constraintTop_toBottomOf="@id/divider" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

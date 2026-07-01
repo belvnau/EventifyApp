@@ -27,23 +27,44 @@ interface MessageDao {
     @Query("SELECT COUNT(*) FROM messages WHERE isRead = 0")
     fun getUnreadCount(): Flow<Int>
 
-    // Baru: ambil 1 pesan terakhir per kontak unik, buat tampilan inbox/daftar percakapan
+    // Ambil 1 pesan terakhir per kontak unik, buat tampilan inbox/daftar percakapan
     @Query("""
         SELECT * FROM messages 
-        WHERE timestamp IN (
-            SELECT MAX(timestamp) FROM messages GROUP BY senderEmail
-        )
+        WHERE id IN (
+            SELECT id FROM (
+                SELECT id, 
+                       CASE WHEN senderEmail = :currentUserEmail THEN receiverEmail ELSE senderEmail END as contactEmail,
+                       MAX(timestamp)
+                FROM messages
+                GROUP BY contactEmail
+            )
+        ) AND (senderEmail != :currentUserEmail OR receiverEmail != :currentUserEmail)
         ORDER BY timestamp DESC
     """)
-    fun getLatestMessagePerSender(): Flow<List<Message>>
+    fun getLatestMessagePerSender(currentUserEmail: String): Flow<List<Message>>
 
-    // Baru: untuk tab "Unread" — sama tapi cuma yang belum dibaca
+    // Untuk tab "Unread" — sama tapi cuma yang belum dibaca dan dikirim oleh orang lain
     @Query("""
         SELECT * FROM messages 
-        WHERE timestamp IN (
-            SELECT MAX(timestamp) FROM messages GROUP BY senderEmail
-        ) AND isRead = 0
+        WHERE id IN (
+            SELECT id FROM (
+                SELECT id, 
+                       CASE WHEN senderEmail = :currentUserEmail THEN receiverEmail ELSE senderEmail END as contactEmail,
+                       MAX(timestamp)
+                FROM messages
+                GROUP BY contactEmail
+            )
+        ) AND isRead = 0 AND senderEmail != :currentUserEmail
         ORDER BY timestamp DESC
     """)
-    fun getUnreadConversations(): Flow<List<Message>>
+    fun getUnreadConversations(currentUserEmail: String): Flow<List<Message>>
+
+    // Mengambil riwayat chat antara user saat ini dan kontak tertentu
+    @Query("""
+        SELECT * FROM messages 
+        WHERE (senderEmail = :contactEmail AND receiverEmail = :currentUserEmail)
+           OR (senderEmail = :currentUserEmail AND receiverEmail = :contactEmail)
+        ORDER BY timestamp ASC
+    """)
+    fun getChatMessages(contactEmail: String, currentUserEmail: String): Flow<List<Message>>
 }

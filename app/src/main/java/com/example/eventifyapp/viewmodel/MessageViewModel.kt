@@ -21,10 +21,10 @@ class MessageViewModel(private val repository: MessageRepository) : ViewModel() 
     val error: StateFlow<String?> = _error.asStateFlow()
 
     // Dipakai MessagesActivity, tab "All"
-    fun loadAllConversations() {
+    fun loadAllConversations(currentUserEmail: String) {
         viewModelScope.launch {
             try {
-                repository.getLatestMessagePerSender().collect { list ->
+                repository.getLatestMessagePerSender(currentUserEmail).collect { list ->
                     _conversations.value = list
                 }
             } catch (e: Exception) {
@@ -34,10 +34,10 @@ class MessageViewModel(private val repository: MessageRepository) : ViewModel() 
     }
 
     // Dipakai MessagesActivity, tab "Unread"
-    fun loadUnreadConversations() {
+    fun loadUnreadConversations(currentUserEmail: String) {
         viewModelScope.launch {
             try {
-                repository.getUnreadConversations().collect { list ->
+                repository.getUnreadConversations(currentUserEmail).collect { list ->
                     _conversations.value = list
                 }
             } catch (e: Exception) {
@@ -47,10 +47,10 @@ class MessageViewModel(private val repository: MessageRepository) : ViewModel() 
     }
 
     // Dipakai ChatDetailActivity, ambil semua pesan dengan 1 kontak tertentu
-    fun loadChatWithSender(email: String) {
+    fun loadChatWithSender(email: String, currentUserEmail: String) {
         viewModelScope.launch {
             try {
-                repository.getMessagesBySender(email).collect { list ->
+                repository.getChatMessages(email, currentUserEmail).collect { list ->
                     _chatMessages.value = list
                 }
             } catch (e: Exception) {

@@ -35,4 +35,7 @@ interface EventDao {
 
     @Query("SELECT * FROM events WHERE isFavorite = 1")
     fun getFavoriteEvents(): Flow<List<Event>>
+
+    @Query("SELECT COUNT(*) FROM events")
+    suspend fun getEventCount(): Int
 }

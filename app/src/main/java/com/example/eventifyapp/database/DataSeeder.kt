@@ -80,4 +80,34 @@ object DataSeeder {
             )
         )
     }
+
+    fun getDummyMessages(currentUserEmail: String): List<com.example.eventifyapp.model.Message> {
+        val now = System.currentTimeMillis()
+        return listOf(
+            com.example.eventifyapp.model.Message(
+                senderName = "Jane Doe",
+                senderEmail = "jane.doe@example.com",
+                receiverEmail = currentUserEmail,
+                message = "Hi, are you attending the Tech Conference tomorrow?",
+                timestamp = now - 3600000, // 1 hour ago
+                isRead = false
+            ),
+            com.example.eventifyapp.model.Message(
+                senderName = "Mark Smith",
+                senderEmail = "mark.smith@example.com",
+                receiverEmail = currentUserEmail,
+                message = "Hey, do you know where GBK (Gelora Bung Karno) is?",
+                timestamp = now - 7200000, // 2 hours ago
+                isRead = true
+            ),
+            com.example.eventifyapp.model.Message(
+                senderName = "Alice Johnson",
+                senderEmail = "alice.johnson@example.com",
+                receiverEmail = currentUserEmail,
+                message = "The K-Pop Picnic is going to be so much fun!",
+                timestamp = now - 10800000, // 3 hours ago
+                isRead = false
+            )
+        )
+    }
 }

@@ -65,6 +65,14 @@ class LoginActivity : AppCompatActivity() {
             return
         }
 
+        // Simpan ke SharedPreferences
+        val sharedPrefs = getSharedPreferences("user_prefs", MODE_PRIVATE)
+        sharedPrefs.edit().apply {
+            putString("USER_EMAIL", email)
+            putString("USER_NAME", email.substringBefore("@"))
+            apply()
+        }
+
         // Login berhasil → pindah ke MainActivity
         val intent = Intent(this, MainActivity::class.java).apply {
             putExtra("USER_EMAIL", email)
