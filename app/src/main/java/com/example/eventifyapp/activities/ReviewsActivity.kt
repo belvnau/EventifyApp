@@ -13,7 +13,6 @@ import com.example.eventifyapp.R
 import com.example.eventifyapp.adapters.ReviewAdapter
 import com.example.eventifyapp.database.AppDatabase
 import com.example.eventifyapp.databinding.ActivityReviewsBinding
-import com.example.eventifyapp.databinding.LayoutNavbarBinding
 import com.example.eventifyapp.model.Review
 import com.example.eventifyapp.repository.ReviewRepository
 import com.example.eventifyapp.viewmodel.ReviewViewModel
@@ -37,7 +36,7 @@ class ReviewsActivity : AppCompatActivity() {
         setupViewModel()
         setupRecyclerView()
         setupAddReviewButton()
-        setupBottomNavigation()
+        setupToolbar()
         observeReviews()
 
         binding.btnBack.setOnClickListener {
@@ -82,6 +81,12 @@ class ReviewsActivity : AppCompatActivity() {
         }
     }
 
+    private fun setupToolbar() {
+        binding.btnBack.setOnClickListener {
+            finish()
+        }
+    }
+
     private fun showAddReviewDialog() {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_review, null)
         val etName = dialogView.findViewById<EditText>(R.id.etReviewerName)
@@ -114,21 +119,5 @@ class ReviewsActivity : AppCompatActivity() {
             }
             .setNegativeButton("Batal", null)
             .show()
-    }
-
-    private fun setupBottomNavigation() {
-        val navbarBinding = LayoutNavbarBinding.bind(binding.bottomNavbar.root)
-        navbarBinding.navChat.setOnClickListener {
-            startActivity(android.content.Intent(this, MessagesActivity::class.java))
-        }
-        navbarBinding.navNotification.setOnClickListener {
-            startActivity(android.content.Intent(this, NotificationActivity::class.java))
-        }
-        navbarBinding.navProfile.setOnClickListener {
-            startActivity(android.content.Intent(this, ProfileActivity::class.java))
-        }
-        navbarBinding.navHome.setOnClickListener {
-            startActivity(android.content.Intent(this, MainActivity::class.java))
-        }
     }
 }

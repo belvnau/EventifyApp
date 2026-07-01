@@ -4,10 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.example.eventifyapp.R
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.eventifyapp.R
 import com.example.eventifyapp.adapters.MessageAdapter
 import com.example.eventifyapp.database.AppDatabase
 import com.example.eventifyapp.databinding.ActivityMessagesBinding
@@ -22,7 +22,7 @@ class MessagesActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMessagesBinding
     private lateinit var viewModel: MessageViewModel
     private lateinit var messageAdapter: MessageAdapter
-    
+
     private var isTabAllSelected = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -116,26 +116,44 @@ class MessagesActivity : AppCompatActivity() {
         }
     }
 
+
     private fun setupBottomNavigation() {
         val navbarBinding = LayoutNavbarBinding.bind(binding.bottomNavbar.root)
-        
-        // Tandai tab Chat sebagai aktif (warna oranye)
+
+        // Set active icon for Chat
         navbarBinding.navChat.setColorFilter(getColor(R.color.colorOrange))
-        
+        navbarBinding.navHome.setColorFilter(getColor(R.color.gray_text))
+        navbarBinding.navNotification.setColorFilter(getColor(R.color.gray_text))
+        navbarBinding.navProfile.setColorFilter(getColor(R.color.gray_text))
+
         navbarBinding.navHome.setOnClickListener {
-            startActivity(Intent(this, MainActivity::class.java))
-            finish()
+            val intent = Intent(this, MainActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+            startActivity(intent)
+            overridePendingTransition(0, 0)
         }
+
         navbarBinding.navChat.setOnClickListener {
-            // Sudah di halaman chat, tidak perlu pindah
+            // Already here
         }
+
         navbarBinding.navNotification.setOnClickListener {
-            startActivity(Intent(this, NotificationActivity::class.java))
-            finish()
+            val intent = Intent(this, NotificationActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+            startActivity(intent)
+            overridePendingTransition(0, 0)
         }
+
         navbarBinding.navProfile.setOnClickListener {
-            startActivity(Intent(this, ProfileActivity::class.java))
-            finish()
+            val intent = Intent(this, ProfileActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+            startActivity(intent)
+            overridePendingTransition(0, 0)
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
     }
 }

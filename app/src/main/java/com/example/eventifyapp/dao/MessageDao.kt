@@ -30,7 +30,7 @@ interface MessageDao {
     // Ambil 1 pesan terakhir per kontak unik, buat tampilan inbox/daftar percakapan
     @Query("""
         SELECT * FROM messages 
-        WHERE id IN (
+         WHERE id IN (
             SELECT id FROM (
                 SELECT id, 
                        CASE WHEN senderEmail = :currentUserEmail THEN receiverEmail ELSE senderEmail END as contactEmail,
