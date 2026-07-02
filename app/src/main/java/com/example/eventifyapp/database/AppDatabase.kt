@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 
 @Database(
     entities = [Event::class, Message::class, NotificationItem::class, Review::class, User::class],
-    version = 11,
+    version = 12,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

@@ -17,6 +17,7 @@ import kotlinx.coroutines.withContext
 
 class MessageAdapter(
     private var messages: List<Message> = emptyList(),
+    private val currentUserEmail: String,
     private val onItemClick: (Message) -> Unit
 ) : RecyclerView.Adapter<MessageAdapter.MessageViewHolder>() {
 
@@ -35,10 +36,17 @@ class MessageAdapter(
 
     override fun onBindViewHolder(holder: MessageViewHolder, position: Int) {
         val message = messages[position]
-        val chatTitle = if (message.groupTitle.isNotEmpty()) {
+        val chatPartnerEmail = if (message.senderEmail.equals(currentUserEmail, ignoreCase = true)) {
+            message.receiverEmail
+        } else {
+            message.senderEmail
+        }
+        val chatTitle = if (message.isCommunity) {
+            message.groupTitle
+        } else if (message.groupTitle.isNotEmpty()) {
             message.groupTitle
         } else {
-            message.senderName
+            getContactNameByEmail(chatPartnerEmail)
         }
         holder.binding.tvSenderName.text = chatTitle
         holder.binding.tvMessagePreview.text = message.message
@@ -146,6 +154,20 @@ class MessageAdapter(
             } else {
                 imageView.setImageResource(R.drawable.img_avatar_default)
             }
+        }
+    }
+
+    private fun getContactNameByEmail(email: String): String {
+        return when (email.lowercase(Locale.getDefault())) {
+            "naura@gmail.com" -> "Naura Belva"
+            "saddam_aditya@gmail.com" -> "Saddam Aditya"
+            "graceu@gmail.com" -> "Graceu Larisma"
+            "saddam_mufti@gmail.com" -> "Saddam Mufti"
+            "syaira_poe@gmail.com" -> "Syaira Poe"
+            "nasywa_sasi@gmail.com" -> "Nasywa Sasikirana"
+            "poetrysa@gmail.com" -> "Syaira Poetry"
+            "circle_1@gmail.com" -> "Naura, Graceu, Nasywa"
+            else -> email
         }
     }
 }

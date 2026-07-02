@@ -17,6 +17,7 @@ import com.example.eventifyapp.utils.SessionManager
 import com.example.eventifyapp.viewmodel.MessageViewModel
 import com.example.eventifyapp.viewmodel.ViewModelFactory
 import com.example.eventifyapp.model.Event
+import com.example.eventifyapp.model.Message
 import kotlinx.coroutines.launch
 
 class MessagesActivity : AppCompatActivity() {
@@ -34,6 +35,14 @@ class MessagesActivity : AppCompatActivity() {
 
         val sessionManager = SessionManager(this)
         currentUserEmail = sessionManager.getLoggedInEmail() ?: "poetrysa@gmail.com"
+
+        lifecycleScope.launch {
+            val database = AppDatabase.getDatabase(applicationContext)
+            val count = database.messageDao().getPrivateMessageCountForUser(currentUserEmail)
+            if (count == 0) {
+                seedMockMessagesForUser(database, currentUserEmail)
+            }
+        }
 
         setupViewModel()
         setupRecyclerView()
@@ -55,7 +64,7 @@ class MessagesActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        messageAdapter = MessageAdapter(emptyList()) { message ->
+        messageAdapter = MessageAdapter(emptyList(), currentUserEmail) { message ->
             val intent = Intent(this, ChatDetailActivity::class.java).apply {
                 val partnerEmail = if (message.senderEmail.equals(currentUserEmail, ignoreCase = true)) {
                     message.receiverEmail
@@ -175,5 +184,81 @@ class MessagesActivity : AppCompatActivity() {
         super.onNewIntent(intent)
         setIntent(intent)
         handleIntentExtras(intent)
+    }
+
+    private suspend fun seedMockMessagesForUser(database: AppDatabase, myEmail: String) {
+        val now = System.currentTimeMillis()
+        val messagesToSeed = listOf(
+            Message(
+                senderName = "Naura Belva",
+                senderEmail = "naura@gmail.com",
+                receiverEmail = myEmail,
+                message = "Nice to hear from you! This is very exciting.",
+                timestamp = now - 600000,
+                isRead = false,
+                isCommunity = false
+            ),
+            Message(
+                senderName = "Saddam Aditya",
+                senderEmail = "saddam_aditya@gmail.com",
+                receiverEmail = myEmail,
+                message = "You know what to do :D",
+                timestamp = now - 1800000,
+                isRead = false,
+                isCommunity = false
+            ),
+            Message(
+                senderName = "Graceu Larisma",
+                senderEmail = "graceu@gmail.com",
+                receiverEmail = myEmail,
+                message = "This is so nice! I'm glad for you",
+                timestamp = now - 3600000,
+                isRead = false,
+                isCommunity = false
+            ),
+            Message(
+                senderName = "Saddam Mufti",
+                senderEmail = "saddam_mufti@gmail.com",
+                receiverEmail = myEmail,
+                message = "Interesting 😜",
+                timestamp = now - 7200000,
+                isRead = false,
+                isCommunity = false
+            ),
+            Message(
+                senderName = "Graceu Larisma",
+                senderEmail = "circle_1@gmail.com",
+                receiverEmail = myEmail,
+                message = "Guys let's organize again!",
+                timestamp = now - 14400000,
+                isRead = true,
+                isCommunity = false,
+                groupTitle = "Naura, Graceu, Nasywa"
+            ),
+            Message(
+                senderName = "Syaira Poe",
+                senderEmail = "syaira_poe@gmail.com",
+                receiverEmail = myEmail,
+                message = "Where are u from?",
+                timestamp = now - 28800000,
+                isRead = false,
+                isCommunity = false
+            ),
+            Message(
+                senderName = "Nasywa Sasikirana",
+                senderEmail = "nasywa_sasi@gmail.com",
+                receiverEmail = myEmail,
+                message = "Hi!!",
+                timestamp = now - 43200000,
+                isRead = true,
+                isCommunity = false
+            )
+        )
+
+        for (msg in messagesToSeed) {
+            if (!msg.senderEmail.equals(myEmail, ignoreCase = true)) {
+                database.messageDao().insertMessage(msg)
+            }
+        }
     }
 }

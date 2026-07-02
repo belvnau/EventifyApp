@@ -62,12 +62,13 @@ interface MessageDao {
     // Tambahan untuk All Messages (non-community)
     @Query("""
         SELECT * FROM messages 
-        WHERE isCommunity = 0 AND id IN (
+        WHERE isCommunity = 0 AND (senderEmail = :currentUserEmail OR receiverEmail = :currentUserEmail) AND id IN (
             SELECT id FROM (
                 SELECT id, 
                        CASE WHEN senderEmail = :currentUserEmail THEN receiverEmail ELSE senderEmail END as contactEmail,
                        MAX(timestamp)
                 FROM messages
+                WHERE senderEmail = :currentUserEmail OR receiverEmail = :currentUserEmail
                 GROUP BY contactEmail
             )
         )
@@ -102,4 +103,7 @@ interface MessageDao {
         ORDER BY timestamp ASC
     """)
     fun getChatMessages(contactEmail: String, currentUserEmail: String): Flow<List<Message>>
+
+    @Query("SELECT COUNT(*) FROM messages WHERE isCommunity = 0 AND (senderEmail = :email OR receiverEmail = :email)")
+    suspend fun getPrivateMessageCountForUser(email: String): Int
 }
