@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 
 @Database(
     entities = [Event::class, Message::class, NotificationItem::class, Review::class, User::class],
-    version = 10,
+    version = 11,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -61,11 +61,12 @@ abstract class AppDatabase : RoomDatabase() {
             for (event in events) {
                 val id = database.eventDao().insertEvent(event)
                 insertedIds.add(id)
-                // Tambah dummy notifikasi
-                val notifications = DataSeeder.getDummyNotifications()
-                for (notif in notifications) {
-                    database.notificationDao().insertNotification(notif)
-                }
+            }
+            
+            // Tambah dummy notifikasi (di luar loop)
+            val notifications = DataSeeder.getDummyNotifications()
+            for (notif in notifications) {
+                database.notificationDao().insertNotification(notif)
             }
             
             database.userDao().insertUser(User(
