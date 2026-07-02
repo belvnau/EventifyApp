@@ -110,6 +110,10 @@ class MainActivity : AppCompatActivity() {
             isGridView = !isGridView
             updateRecyclerViewLayout()
         }
+        binding.btnCategories.setOnClickListener {
+            val intent = Intent(this, CategoryActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun setupFilterTabs() {

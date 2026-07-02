@@ -7,6 +7,10 @@ import androidx.viewbinding.ViewBinding
 import com.example.eventifyapp.databinding.ItemEventCardBinding
 import com.example.eventifyapp.databinding.ItemEventGridBinding
 import com.example.eventifyapp.model.Event
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -86,12 +90,35 @@ class EventAdapter(
     }
 
     private fun loadImage(imageUrl: String, imageView: android.widget.ImageView, context: android.content.Context) {
-        val resourceId = context.resources.getIdentifier(imageUrl, "drawable", context.packageName)
-        if (resourceId != 0) {
-            imageView.setImageResource(resourceId)
+        if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) {
+            kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.Main).launch {
+                val bitmap = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                    try {
+                        val url = java.net.URL(imageUrl)
+                        val connection = url.openConnection()
+                        connection.doInput = true
+                        connection.connect()
+                        val input = connection.getInputStream()
+                        android.graphics.BitmapFactory.decodeStream(input)
+                    } catch (e: Exception) {
+                        null
+                    }
+                }
+                if (bitmap != null) {
+                    imageView.setImageBitmap(bitmap)
+                } else {
+                    val defaultResId = context.resources.getIdentifier("img_artket", "drawable", context.packageName)
+                    imageView.setImageResource(defaultResId)
+                }
+            }
         } else {
-            val defaultResId = context.resources.getIdentifier("img_artket", "drawable", context.packageName)
-            imageView.setImageResource(defaultResId)
+            val resourceId = context.resources.getIdentifier(imageUrl, "drawable", context.packageName)
+            if (resourceId != 0) {
+                imageView.setImageResource(resourceId)
+            } else {
+                val defaultResId = context.resources.getIdentifier("img_artket", "drawable", context.packageName)
+                imageView.setImageResource(defaultResId)
+            }
         }
     }
 
