@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 
 @Database(
     entities = [Event::class, Message::class, NotificationItem::class, Review::class, User::class],
-    version = 5,
+    version = 6,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -51,14 +51,18 @@ abstract class AppDatabase : RoomDatabase() {
                         }
                     })
                     .build()
-                INSTANCE = instance
+                    INSTANCE = instance
                 instance
             }
         }
 
         private suspend fun populateDatabase(database: AppDatabase) {
             val events = DataSeeder.getDummyEvents()
-            database.eventDao().insertEvents(events)
+            val insertedIds = mutableListOf<Long>()
+            for (event in events) {
+                val id = database.eventDao().insertEvent(event)
+                insertedIds.add(id)
+            }
             
             database.userDao().insertUser(User(
                 id = 1,
@@ -69,6 +73,59 @@ abstract class AppDatabase : RoomDatabase() {
                 bio = "Event enthusiast and creative designer.",
                 location = "Jakarta, ID"
             ))
+
+            val cal = java.util.Calendar.getInstance()
+            for (eventId in insertedIds) {
+                // Review 1: Christian Bale (16 Sep, 2025)
+                cal.set(2025, java.util.Calendar.SEPTEMBER, 16, 10, 0, 0)
+                database.reviewDao().insertReview(Review(
+                    eventId = eventId,
+                    reviewerName = "Christian Bale",
+                    rating = 4.0f,
+                    comment = "The event was so much fun. I met many people with similar interest.",
+                    timestamp = cal.timeInMillis
+                ))
+                
+                // Review 2: Sebastian Tet (07 Jul, 2025)
+                cal.set(2025, java.util.Calendar.JULY, 7, 14, 30, 0)
+                database.reviewDao().insertReview(Review(
+                    eventId = eventId,
+                    reviewerName = "Sebastian Tet",
+                    rating = 4.8f,
+                    comment = "The event was well-organized, and I liked how easy it was.",
+                    timestamp = cal.timeInMillis
+                ))
+                
+                // Review 3: Saddam Mufti (14 Feb, 2025)
+                cal.set(2025, java.util.Calendar.FEBRUARY, 14, 9, 15, 0)
+                database.reviewDao().insertReview(Review(
+                    eventId = eventId,
+                    reviewerName = "Saddam Mufti",
+                    rating = 3.0f,
+                    comment = "Worth it banget! Penjelasan materinya gampang dimengerti buat pemula.",
+                    timestamp = cal.timeInMillis
+                ))
+                
+                // Review 4: Naura Belva (27 Jul, 2025)
+                cal.set(2025, java.util.Calendar.JULY, 27, 16, 45, 0)
+                database.reviewDao().insertReview(Review(
+                    eventId = eventId,
+                    reviewerName = "Naura Belva",
+                    rating = 4.2f,
+                    comment = "However, I felt that some parts of the event were a bit too crowded.",
+                    timestamp = cal.timeInMillis
+                ))
+                
+                // Review 5: Saddam Aditya (05 Jan, 2025)
+                cal.set(2025, java.util.Calendar.JANUARY, 5, 11, 20, 0)
+                database.reviewDao().insertReview(Review(
+                    eventId = eventId,
+                    reviewerName = "Saddam Aditya",
+                    rating = 4.1f,
+                    comment = "Best event of the year! Gak sabar buat ikutan event selanjutnya.",
+                    timestamp = cal.timeInMillis
+                ))
+            }
         }
     }
 }
