@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 
 @Database(
     entities = [Event::class, Message::class, NotificationItem::class, Review::class, User::class],
-    version = 9,
+    version = 10,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -40,7 +40,6 @@ abstract class AppDatabase : RoomDatabase() {
                     .addCallback(object : Callback() {
                         override fun onOpen(db: SupportSQLiteDatabase) {
                             super.onOpen(db)
-                            // Pastikan data terisi jika kosong setelah migrasi
                             CoroutineScope(Dispatchers.IO).launch {
                                 INSTANCE?.let { database ->
                                     if (database.eventDao().getEventCount() == 0) {
