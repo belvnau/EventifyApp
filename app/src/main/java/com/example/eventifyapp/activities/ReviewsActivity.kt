@@ -62,13 +62,14 @@ class ReviewsActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        reviewAdapter = ReviewAdapter(emptyList())
+        reviewAdapter = ReviewAdapter(emptyList()) { review ->
+            viewModel.toggleLikeReview(review)
+        }
         binding.rvReviews.apply {
             layoutManager = LinearLayoutManager(this@ReviewsActivity)
             adapter = reviewAdapter
         }
     }
-
     private fun observeReviews() {
         lifecycleScope.launch {
             viewModel.reviews.collect { reviews ->

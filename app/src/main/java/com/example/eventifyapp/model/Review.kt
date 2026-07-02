@@ -11,5 +11,7 @@ data class Review(
     val reviewerName: String,
     val rating: Float,
     val comment: String,
-    val timestamp: Long = System.currentTimeMillis()
+    val timestamp: Long = System.currentTimeMillis(),
+    val likeCount: Int = 0,            // baru
+    val isLikedByUser: Boolean = false // baru
 )

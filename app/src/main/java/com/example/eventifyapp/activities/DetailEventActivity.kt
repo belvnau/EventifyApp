@@ -200,15 +200,19 @@ class DetailEventActivity : AppCompatActivity() {
     }
 
     private fun setupReviewPreview() {
-        reviewPreviewAdapter = ReviewAdapter(reviews = emptyList())
-        binding.rvReviewPreview.apply {
-            layoutManager = LinearLayoutManager(
-                this@DetailEventActivity,
-                LinearLayoutManager.HORIZONTAL,
-                false
-            )
-            adapter = reviewPreviewAdapter
-        }
+            reviewPreviewAdapter = ReviewAdapter(reviews = emptyList()) { review ->
+                reviewViewModel.toggleLikeReview(review)
+            }
+            binding.rvReviewPreview.apply {
+                layoutManager = LinearLayoutManager(
+                    this@DetailEventActivity,
+                    LinearLayoutManager.HORIZONTAL,
+                    false
+                )
+                adapter = reviewPreviewAdapter
+            }
+
+            // ... (sisanya biarkan tetap sama)
 
 
         if (eventId != -1L) {

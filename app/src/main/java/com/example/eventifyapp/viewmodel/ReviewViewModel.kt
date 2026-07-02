@@ -52,6 +52,26 @@ class ReviewViewModel(private val repository: ReviewRepository) : ViewModel() {
             -1
         }
     }
+    fun toggleLikeReview(review: Review) {
+        viewModelScope.launch {
+            try {
+                val updatedReview = if (review.isLikedByUser) {
+                    review.copy(
+                        isLikedByUser = false,
+                        likeCount = (review.likeCount - 1).coerceAtLeast(0)
+                    )
+                } else {
+                    review.copy(
+                        isLikedByUser = true,
+                        likeCount = review.likeCount + 1
+                    )
+                }
+                repository.updateReview(updatedReview)
+            } catch (e: Exception) {
+                _error.value = e.message
+            }
+        }
+    }
 
     fun clearError() {
         _error.value = null
