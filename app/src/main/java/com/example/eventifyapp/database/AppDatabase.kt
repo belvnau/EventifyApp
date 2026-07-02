@@ -62,6 +62,11 @@ abstract class AppDatabase : RoomDatabase() {
             for (event in events) {
                 val id = database.eventDao().insertEvent(event)
                 insertedIds.add(id)
+                // Tambah dummy notifikasi
+                val notifications = DataSeeder.getDummyNotifications()
+                for (notif in notifications) {
+                    database.notificationDao().insertNotification(notif)
+                }
             }
             
             database.userDao().insertUser(User(

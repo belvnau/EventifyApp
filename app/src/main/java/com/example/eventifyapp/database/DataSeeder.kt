@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-object DataSeeder {
+object   DataSeeder {
 
     private fun getDynamicDate(offsetDays: Int): String {
         val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
@@ -240,6 +240,39 @@ object DataSeeder {
                 message = "The K-Pop Picnic is going to be so much fun!",
                 timestamp = now - 10800000, // 3 hours ago
                 isRead = false
+            )
+        )
+    }
+    fun getDummyNotifications(): List<com.example.eventifyapp.model.NotificationItem> {
+        val now = System.currentTimeMillis()
+        return listOf(
+            com.example.eventifyapp.model.NotificationItem(
+                title = "New Follower",
+                message = "seonghyeonseonghyeon started following you",
+                type = "system",
+                timestamp = now - 60000, // 1 menit lalu
+                isRead = false
+            ),
+            com.example.eventifyapp.model.NotificationItem(
+                title = "Event Invitation",
+                message = "daniel redcliff invite you on Doodle x English Meetup 2025",
+                type = "event",
+                timestamp = now - 300000, // 5 menit lalu
+                isRead = false
+            ),
+            com.example.eventifyapp.model.NotificationItem(
+                title = "Event Added",
+                message = "You add Art Market to your event",
+                type = "event",
+                timestamp = now - 3600000, // 1 jam lalu
+                isRead = true
+            ),
+            com.example.eventifyapp.model.NotificationItem(
+                title = "Review Liked",
+                message = "Nasywa Sasi liked your Art Market review",
+                type = "system",
+                timestamp = now - 72000000, // 20 jam lalu
+                isRead = true
             )
         )
     }

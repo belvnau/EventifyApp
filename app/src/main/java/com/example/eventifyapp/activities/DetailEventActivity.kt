@@ -18,7 +18,9 @@ import com.example.eventifyapp.repository.EventRepository
 import com.example.eventifyapp.repository.NotificationRepository
 import com.example.eventifyapp.viewmodel.EventViewModel
 import com.example.eventifyapp.viewmodel.NotificationViewModel
+import com.example.eventifyapp.utils.NotificationHelper
 import com.example.eventifyapp.viewmodel.ViewModelFactory
+import com.example.eventifyapp.R
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -179,31 +181,31 @@ class DetailEventActivity : AppCompatActivity() {
                 return@launch
             }
 
-            val newStatus = !event.isFavorite
             eventViewModel.toggleFavorite(event.id, event.isFavorite)
-            updateInterestedButtonState(newStatus)
 
-            val message = if (newStatus) {
-                notificationViewModel.addNotification(
-                    NotificationItem(
-                        title = "Interested",
-                        message = "Kamu tertarik pada event: ${event.title}!",
-                        type = "event",
-                        eventId = event.id
-                    )
+            notificationViewModel.addNotification(
+                NotificationItem(
+                    title = "Interested",
+                    message = "Kamu menambahkan ${event.title} ke daftar event kamu!",  // ← pakai nama event
+                    type = "event",
+                    eventId = event.id
                 )
-                "Kamu tertarik pada event ini!"
-            } else {
-                "Dihapus dari daftar disimpan"
-            }
+            )
+
+            // Kirim Android system notification ← ini yang baru
+            NotificationHelper.sendInterestedNotification(
+                context = this@DetailEventActivity,
+                eventTitle = eventTitle
+            )
 
             Toast.makeText(
                 this@DetailEventActivity,
-                message,
+                "Kamu tertarik pada event ini!",
                 Toast.LENGTH_SHORT
             ).show()
         }
     }
+
 
     private fun updateInterestedButtonState(isFavorite: Boolean) {
         if (isFavorite) {
