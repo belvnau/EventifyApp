@@ -22,58 +22,62 @@ EventifyApp/
 └── app/src/main/
     ├── java/com/example/eventifyapp/
     │   ├── activities/
-    │   │   ├── SplashActivity.kt
-    │   │   ├── LoginActivity.kt
-    │   │   ├── SignUpActivity.kt
-    │   │   ├── MainActivity.kt
-    │   │   ├── DetailEventActivity.kt
-    │   │   ├── MessagesActivity.kt
+    │   │   ├── CategoryActivity.kt
     │   │   ├── ChatDetailActivity.kt
-    │   │   ├── ReviewsActivity.kt
+    │   │   ├── DetailEventActivity.kt
+    │   │   ├── LoginActivity.kt
+    │   │   ├── MainActivity.kt
+    │   │   ├── MessagesActivity.kt
+    │   │   ├── NotificationActivity.kt
     │   │   ├── ProfileActivity.kt
-    │   │   └── NotificationActivity.kt
+    │   │   ├── ReviewsActivity.kt
+    │   │   ├── SignUpActivity.kt
+    │   │   └── SplashActivity.kt
     │   ├── adapters/
+    │   │   ├── ChatAdapter.kt
     │   │   ├── EventAdapter.kt
     │   │   ├── MessageAdapter.kt
-    │   │   ├── ChatAdapter.kt
-    │   │   ├── ReviewAdapter.kt
-    │   │   └── NotificationAdapter.kt
-    │   ├── model/
-    │   │   ├── Event.kt
-    │   │   ├── Message.kt
-    │   │   ├── Chat.kt
-    │   │   ├── Review.kt
-    │   │   ├── NotificationItem.kt
-    │   │   └── User.kt
+    │   │   ├── NotificationAdapter.kt
+    │   │   └── ReviewAdapter.kt
     │   ├── dao/
     │   │   ├── EventDao.kt
     │   │   ├── MessageDao.kt
-    │   │   ├── ChatDao.kt
-    │   │   ├── ReviewDao.kt
     │   │   ├── NotificationDao.kt
+    │   │   ├── ReviewDao.kt
     │   │   └── UserDao.kt
     │   ├── database/
-    │   │   └── AppDatabase.kt
+    │   │   ├── AppDatabase.kt
+    │   │   ├── Converters.kt
+    │   │   └── DataSeeder.kt
+    │   ├── fragments/
+    │   │   └── DialogEditProfileFragment.kt
+    │   ├── model/
+    │   │   ├── Event.kt
+    │   │   ├── Message.kt
+    │   │   ├── NotificationItem.kt
+    │   │   ├── Review.kt
+    │   │   └── User.kt
     │   ├── repository/
     │   │   ├── EventRepository.kt
     │   │   ├── MessageRepository.kt
-    │   │   ├── ChatRepository.kt
-    │   │   ├── ReviewRepository.kt
     │   │   ├── NotificationRepository.kt
+    │   │   ├── ReviewRepository.kt
     │   │   └── UserRepository.kt
-    │   ├── viewmodel/
-    │   │   ├── EventViewModel.kt
-    │   │   ├── ChatViewModel.kt
-    │   │   └── NotificationViewModel.kt
-    │   ├── fragments/
-    │   │   └── HomeFragment.kt
-    │   └── receiver/
-    │       └── EventBroadcastReceiver.kt
+    │   ├── utils/
+    │   │   ├── NotificationHelper.kt
+    │   │   └── SessionManager.kt
+    │   └── viewmodel/
+    │       ├── EventViewModel.kt
+    │       ├── MessageViewModel.kt
+    │       ├── NotificationViewModel.kt
+    │       ├── ReviewViewModel.kt
+    │       ├── UserViewModel.kt
+    │       └── ViewModelFactory.kt
     └── res/
-        ├── layout/         ← semua layout XML (activity & item)
-        ├── drawable/       ← icon, background, gambar
-        ├── menu/           ← bottom nav menu
-        └── values/         ← colors, strings, themes
+        ├── drawable/       ← custom avatars, default icons, background gradients, and vector graphics
+        ├── layout/         ← XML layouts for activities, adapters list items, popups, and dialogs
+        ├── menu/           ← navbar bottom menu items
+        └── values/         ← theme styles, custom colors, layout attributes, and text string resources
 ```
 
 ---
