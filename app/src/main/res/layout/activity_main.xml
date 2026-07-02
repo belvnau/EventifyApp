@@ -148,10 +148,14 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/btnCategories"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground"
                     android:orientation="vertical">
                     <ImageView
                         android:layout_width="44dp"
@@ -159,12 +163,12 @@
                         android:padding="10dp"
                         android:background="@drawable/bg_nav_bottom"
                         android:backgroundTint="#F2F2F7"
-                        android:src="@android:drawable/ic_menu_my_calendar"
+                        android:src="@android:drawable/ic_menu_compass"
                         app:tint="@color/colorTextSecondary" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="New groups"
+                        android:text="Categories"
                         android:textSize="10sp"
                         android:layout_marginTop="4dp"
                         android:textColor="@color/colorTextSecondary" />

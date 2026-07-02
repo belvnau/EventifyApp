@@ -17,15 +17,6 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize">
 
-            <ImageButton
-                android:id="@+id/btnBack"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_arrow_back"
-                app:tint="@color/white"
-                android:contentDescription="Back" />
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

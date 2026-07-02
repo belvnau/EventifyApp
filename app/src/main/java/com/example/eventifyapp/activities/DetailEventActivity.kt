@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.example.eventifyapp.R
@@ -119,16 +120,48 @@ class DetailEventActivity : AppCompatActivity() {
     }
 
     private fun setEventImage(imageUrl: String) {
-        val resourceId = resources.getIdentifier(imageUrl, "drawable", packageName)
-        if (resourceId != 0) {
-            binding.ivDetailImage.setImageResource(resourceId)
+        if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) {
+            lifecycleScope.launch {
+                val bitmap = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                    try {
+                        val url = java.net.URL(imageUrl)
+                        val connection = url.openConnection()
+                        connection.doInput = true
+                        connection.connect()
+                        val input = connection.getInputStream()
+                        android.graphics.BitmapFactory.decodeStream(input)
+                    } catch (e: Exception) {
+                        null
+                    }
+                }
+                if (bitmap != null) {
+                    binding.ivDetailImage.setImageBitmap(bitmap)
+                } else {
+                    val defaultResId = resources.getIdentifier("img_artket", "drawable", packageName)
+                    binding.ivDetailImage.setImageResource(defaultResId)
+                }
+            }
         } else {
-            val defaultResId = resources.getIdentifier("img_artket", "drawable", packageName)
-            binding.ivDetailImage.setImageResource(defaultResId)
+            val resourceId = resources.getIdentifier(imageUrl, "drawable", packageName)
+            if (resourceId != 0) {
+                binding.ivDetailImage.setImageResource(resourceId)
+            } else {
+                val defaultResId = resources.getIdentifier("img_artket", "drawable", packageName)
+                binding.ivDetailImage.setImageResource(defaultResId)
+            }
         }
     }
 
     private fun setupInterestedButton() {
+        if (eventId != -1L) {
+            lifecycleScope.launch {
+                val event = eventViewModel.getEventById(eventId)
+                if (event != null) {
+                    updateInterestedButtonState(event.isFavorite)
+                }
+            }
+        }
+
         binding.btnInterested.setOnClickListener {
             if (eventId == -1L) {
                 Toast.makeText(this, "Event tidak ditemukan", Toast.LENGTH_SHORT).show()
@@ -147,22 +180,45 @@ class DetailEventActivity : AppCompatActivity() {
                 return@launch
             }
 
+            val newStatus = !event.isFavorite
             eventViewModel.toggleFavorite(event.id, event.isFavorite)
+            updateInterestedButtonState(newStatus)
 
-            notificationViewModel.addNotification(
-                NotificationItem(
-                    title = "Interested",
-                    message = "Kamu tertarik pada event ini!",
-                    type = "event",
-                    eventId = event.id
+            val message = if (newStatus) {
+                notificationViewModel.addNotification(
+                    NotificationItem(
+                        title = "Interested",
+                        message = "Kamu tertarik pada event: ${event.title}!",
+                        type = "event",
+                        eventId = event.id
+                    )
                 )
-            )
+                "Kamu tertarik pada event ini!"
+            } else {
+                "Dihapus dari daftar disimpan"
+            }
 
             Toast.makeText(
                 this@DetailEventActivity,
-                "Kamu tertarik pada event ini!",
+                message,
                 Toast.LENGTH_SHORT
             ).show()
+        }
+    }
+
+    private fun updateInterestedButtonState(isFavorite: Boolean) {
+        if (isFavorite) {
+            binding.btnInterested.text = "Saved"
+            binding.btnInterested.setTextColor(ContextCompat.getColor(this, R.color.white))
+            binding.btnInterested.backgroundTintList = android.content.res.ColorStateList.valueOf(
+                ContextCompat.getColor(this, R.color.colorOrange)
+            )
+        } else {
+            binding.btnInterested.text = "Interested"
+            binding.btnInterested.setTextColor(ContextCompat.getColor(this, R.color.colorOrange))
+            binding.btnInterested.backgroundTintList = android.content.res.ColorStateList.valueOf(
+                ContextCompat.getColor(this, R.color.colorOrangeSoft)
+            )
         }
     }
 
