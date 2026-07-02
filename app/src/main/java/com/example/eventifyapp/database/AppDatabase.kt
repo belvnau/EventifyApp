@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 
 @Database(
     entities = [Event::class, Message::class, NotificationItem::class, Review::class, User::class],
-    version = 7,
+    version = 9,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -131,6 +131,108 @@ abstract class AppDatabase : RoomDatabase() {
                     timestamp = cal.timeInMillis
                 ))
             }
+
+            // Seed Messages
+            val myEmail = "poetrysa@gmail.com"
+            val now = System.currentTimeMillis()
+
+            // Private Chats
+            database.messageDao().insertMessage(Message(
+                senderName = "Naura Belva",
+                senderEmail = "naura@gmail.com",
+                receiverEmail = myEmail,
+                message = "Nice to hear from you! This is very exciting.",
+                timestamp = now - 600000,
+                isRead = false,
+                isCommunity = false
+            ))
+
+            database.messageDao().insertMessage(Message(
+                senderName = "Saddam Aditya",
+                senderEmail = "saddam_aditya@gmail.com",
+                receiverEmail = myEmail,
+                message = "You know what to do :D",
+                timestamp = now - 1800000,
+                isRead = false,
+                isCommunity = false
+            ))
+
+            database.messageDao().insertMessage(Message(
+                senderName = "Graceu Larisma",
+                senderEmail = "graceu@gmail.com",
+                receiverEmail = myEmail,
+                message = "This is so nice! I'm glad for you",
+                timestamp = now - 3600000,
+                isRead = false,
+                isCommunity = false
+            ))
+
+            database.messageDao().insertMessage(Message(
+                senderName = "Saddam Mufti",
+                senderEmail = "saddam_mufti@gmail.com",
+                receiverEmail = myEmail,
+                message = "Interesting 😜",
+                timestamp = now - 7200000,
+                isRead = false,
+                isCommunity = false
+            ))
+
+            // Circle Group Chat
+            database.messageDao().insertMessage(Message(
+                senderName = "Graceu Larisma",
+                senderEmail = "circle_1@gmail.com",
+                receiverEmail = myEmail,
+                message = "Guys let's organize again!",
+                timestamp = now - 14400000,
+                isRead = true,
+                isCommunity = false,
+                groupTitle = "Naura, Graceu, Nasywa"
+            ))
+
+            database.messageDao().insertMessage(Message(
+                senderName = "Syaira Poe",
+                senderEmail = "syaira_poe@gmail.com",
+                receiverEmail = myEmail,
+                message = "Where are u from?",
+                timestamp = now - 28800000,
+                isRead = false,
+                isCommunity = false
+            ))
+
+            database.messageDao().insertMessage(Message(
+                senderName = "Nasywa Sasikirana",
+                senderEmail = "nasywa_sasi@gmail.com",
+                receiverEmail = myEmail,
+                message = "Hi!!",
+                timestamp = now - 43200000,
+                isRead = true,
+                isCommunity = false
+            ))
+
+            // Community Chats
+            database.messageDao().insertMessage(Message(
+                senderName = "Jakarta Arts Council",
+                senderEmail = "community_event_2",
+                receiverEmail = "",
+                message = "Halo teman-teman! Selamat bergabung di grup komunitas Jazz Music Festival. Silakan gunakan grup ini untuk berdiskusi.",
+                timestamp = now - 3600000,
+                isRead = true,
+                isCommunity = true,
+                eventId = 2,
+                groupTitle = "Jazz Music Festival Community"
+            ))
+
+            database.messageDao().insertMessage(Message(
+                senderName = "Tech Indonesia",
+                senderEmail = "community_event_1",
+                receiverEmail = "",
+                message = "Halo dev! Selamat datang di grup komunitas Tech Conference 2026.",
+                timestamp = now - 7200000,
+                isRead = true,
+                isCommunity = true,
+                eventId = 1,
+                groupTitle = "Tech Conference 2026 Community"
+            ))
         }
     }
 }

@@ -12,5 +12,8 @@ data class Message(
     val receiverEmail: String = "",
     val message: String,
     val timestamp: Long = System.currentTimeMillis(),
-    val isRead: Boolean = false
+    val isRead: Boolean = false,
+    val isCommunity: Boolean = false,
+    val eventId: Long = 0,
+    val groupTitle: String = ""
 )

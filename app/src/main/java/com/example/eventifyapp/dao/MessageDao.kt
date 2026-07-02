@@ -27,10 +27,10 @@ interface MessageDao {
     @Query("SELECT COUNT(*) FROM messages WHERE isRead = 0")
     fun getUnreadCount(): Flow<Int>
 
-    // Ambil 1 pesan terakhir per kontak unik, buat tampilan inbox/daftar percakapan
+    // Mengambil 1 pesan terakhir per kontak unik, buat tampilan inbox/daftar percakapan
     @Query("""
         SELECT * FROM messages 
-         WHERE id IN (
+        WHERE id IN (
             SELECT id FROM (
                 SELECT id, 
                        CASE WHEN senderEmail = :currentUserEmail THEN receiverEmail ELSE senderEmail END as contactEmail,
@@ -59,11 +59,46 @@ interface MessageDao {
     """)
     fun getUnreadConversations(currentUserEmail: String): Flow<List<Message>>
 
-    // Mengambil riwayat chat antara user saat ini dan kontak tertentu
+    // Tambahan untuk All Messages (non-community)
+    @Query("""
+        SELECT * FROM messages 
+        WHERE isCommunity = 0 AND id IN (
+            SELECT id FROM (
+                SELECT id, 
+                       CASE WHEN senderEmail = :currentUserEmail THEN receiverEmail ELSE senderEmail END as contactEmail,
+                       MAX(timestamp)
+                FROM messages
+                GROUP BY contactEmail
+            )
+        )
+        ORDER BY timestamp DESC
+    """)
+    fun getLatestAllMessages(currentUserEmail: String): Flow<List<Message>>
+
+    // Tambahan untuk Community tab
+    @Query("""
+        SELECT * FROM messages 
+        WHERE isCommunity = 1 AND id IN (
+            SELECT id FROM (
+                SELECT id, 
+                       eventId,
+                       MAX(timestamp)
+                FROM messages
+                WHERE isCommunity = 1 AND (:currentUserEmail IS NOT NULL OR :currentUserEmail = '')
+                GROUP BY eventId
+            )
+        )
+        ORDER BY timestamp DESC
+    """)
+    fun getLatestCommunityMessages(currentUserEmail: String): Flow<List<Message>>
+
+    // Mengambil riwayat chat antara user saat ini dan kontak tertentu (private, circle, or community)
     @Query("""
         SELECT * FROM messages 
         WHERE (senderEmail = :contactEmail AND receiverEmail = :currentUserEmail)
            OR (senderEmail = :currentUserEmail AND receiverEmail = :contactEmail)
+           OR (senderEmail = :contactEmail AND isCommunity = 1)
+           OR (receiverEmail = :contactEmail AND isCommunity = 1)
         ORDER BY timestamp ASC
     """)
     fun getChatMessages(contactEmail: String, currentUserEmail: String): Flow<List<Message>>

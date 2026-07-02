@@ -2,135 +2,144 @@ package com.example.eventifyapp.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import com.example.eventifyapp.R
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.eventifyapp.R
 import com.example.eventifyapp.adapters.MessageAdapter
 import com.example.eventifyapp.database.AppDatabase
 import com.example.eventifyapp.databinding.ActivityMessagesBinding
 import com.example.eventifyapp.databinding.LayoutNavbarBinding
 import com.example.eventifyapp.repository.MessageRepository
+import com.example.eventifyapp.utils.SessionManager
 import com.example.eventifyapp.viewmodel.MessageViewModel
 import com.example.eventifyapp.viewmodel.ViewModelFactory
+import com.example.eventifyapp.model.Event
 import kotlinx.coroutines.launch
 
 class MessagesActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMessagesBinding
-    private lateinit var viewModel: MessageViewModel
+    private lateinit var messageViewModel: MessageViewModel
     private lateinit var messageAdapter: MessageAdapter
-
-    private var isTabAllSelected = true
+    private var currentUserEmail: String = ""
+    private var currentTab: String = "all"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMessagesBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val sessionManager = SessionManager(this)
+        currentUserEmail = sessionManager.getLoggedInEmail() ?: "poetrysa@gmail.com"
+
         setupViewModel()
         setupRecyclerView()
-        setupTabListeners()
+        setupTabSelection()
         setupBottomNavigation()
-        observeConversations()
-    }
+        
+        binding.btnBack.setOnClickListener {
+            finish()
+        }
 
-    override fun onResume() {
-        super.onResume()
-        // Refresh data saat kembali ke halaman ini
-        loadConversations()
+        handleIntentExtras(intent)
     }
 
     private fun setupViewModel() {
         val database = AppDatabase.getDatabase(applicationContext)
-        val repository = MessageRepository(database.messageDao())
-        val factory = ViewModelFactory(messageRepository = repository)
-        viewModel = ViewModelProvider(this, factory)[MessageViewModel::class.java]
+        val messageRepo = MessageRepository(database.messageDao())
+        val factory = ViewModelFactory(messageRepository = messageRepo)
+        messageViewModel = ViewModelProvider(this, factory)[MessageViewModel::class.java]
     }
 
     private fun setupRecyclerView() {
         messageAdapter = MessageAdapter(emptyList()) { message ->
-            // Saat percakapan diklik, tandai pesan terakhir sebagai sudah dibaca
-            lifecycleScope.launch {
-                viewModel.markAsRead(message.id)
-
-                val sharedPrefs = getSharedPreferences("user_prefs", MODE_PRIVATE)
-                val currentUserEmail = sharedPrefs.getString("USER_EMAIL", "nasywa@example.com") ?: "nasywa@example.com"
-                
-                val chatPartnerEmail = if (message.senderEmail == currentUserEmail) message.receiverEmail else message.senderEmail
-                val chatPartnerName = if (message.senderEmail == currentUserEmail) "Admin" else message.senderName
-
-                val chatIntent = Intent(this@MessagesActivity, ChatDetailActivity::class.java).apply {
-                    putExtra("SENDER_EMAIL", chatPartnerEmail)
-                    putExtra("SENDER_NAME", chatPartnerName)
+            val intent = Intent(this, ChatDetailActivity::class.java).apply {
+                val partnerEmail = if (message.senderEmail.equals(currentUserEmail, ignoreCase = true)) {
+                    message.receiverEmail
+                } else {
+                    message.senderEmail
                 }
-                startActivity(chatIntent)
+                putExtra("SENDER_EMAIL", partnerEmail)
+                putExtra("CHAT_PARTNER_EMAIL", partnerEmail)
+                
+                val chatTitle = if (message.isCommunity) {
+                    message.groupTitle
+                } else if (message.groupTitle.isNotEmpty()) {
+                    message.groupTitle
+                } else {
+                    message.senderName
+                }
+                putExtra("SENDER_NAME", chatTitle)
+                putExtra("CHAT_PARTNER_NAME", chatTitle)
+                putExtra("IS_COMMUNITY", message.isCommunity)
+                putExtra("EVENT_ID", message.eventId)
             }
+            startActivity(intent)
         }
 
-        binding.rvMessages.apply {
-            layoutManager = LinearLayoutManager(this@MessagesActivity)
-            adapter = messageAdapter
-        }
+        binding.rvMessages.layoutManager = LinearLayoutManager(this)
+        binding.rvMessages.adapter = messageAdapter
     }
 
-    private fun setupTabListeners() {
+    private fun setupTabSelection() {
         binding.tabAll.setOnClickListener {
-            if (!isTabAllSelected) {
-                isTabAllSelected = true
-                updateTabUi()
-                loadConversations()
-            }
+            switchTab("all")
         }
-
         binding.tabUnread.setOnClickListener {
-            if (isTabAllSelected) {
-                isTabAllSelected = false
-                updateTabUi()
-                loadConversations()
-            }
+            switchTab("community")
         }
-    }
 
-    private fun updateTabUi() {
-        if (isTabAllSelected) {
-            binding.tabAll.setTextColor(getColor(R.color.colorOrange))
-            binding.tabAll.setTypeface(null, android.graphics.Typeface.BOLD)
-            binding.tabUnread.setTextColor(getColor(R.color.colorTextSecondary))
-            binding.tabUnread.setTypeface(null, android.graphics.Typeface.NORMAL)
-        } else {
-            binding.tabUnread.setTextColor(getColor(R.color.colorOrange))
-            binding.tabUnread.setTypeface(null, android.graphics.Typeface.BOLD)
-            binding.tabAll.setTextColor(getColor(R.color.colorTextSecondary))
-            binding.tabAll.setTypeface(null, android.graphics.Typeface.NORMAL)
-        }
-    }
-
-    private fun loadConversations() {
-        val sharedPrefs = getSharedPreferences("user_prefs", MODE_PRIVATE)
-        val currentUserEmail = sharedPrefs.getString("USER_EMAIL", "nasywa@example.com") ?: "nasywa@example.com"
-        if (isTabAllSelected) {
-            viewModel.loadAllConversations(currentUserEmail)
-        } else {
-            viewModel.loadUnreadConversations(currentUserEmail)
-        }
-    }
-
-    private fun observeConversations() {
         lifecycleScope.launch {
-            viewModel.conversations.collect { list ->
-                messageAdapter.updateData(list)
+            messageViewModel.conversations.collect { conversations ->
+                messageAdapter.updateData(conversations)
             }
+        }
+
+        lifecycleScope.launch {
+            val database = AppDatabase.getDatabase(applicationContext)
+            database.eventDao().getAllEvents().collect { events ->
+                val imageMap = events.associate { it.id to it.imageUrl }
+                messageAdapter.updateEventImages(imageMap)
+            }
+        }
+
+        switchTab("all")
+    }
+
+    private fun switchTab(tab: String) {
+        currentTab = tab
+        if (tab == "all") {
+            binding.tabAll.setBackgroundResource(R.drawable.bg_button)
+            binding.tabAll.setTextColor(ContextCompat.getColor(this, R.color.white))
+
+            binding.tabUnread.background = null
+            binding.tabUnread.setTextColor(ContextCompat.getColor(this, R.color.colorTextSecondary))
+
+            messageViewModel.loadLatestAllMessages(currentUserEmail)
+        } else {
+            binding.tabUnread.setBackgroundResource(R.drawable.bg_button)
+            binding.tabUnread.setTextColor(ContextCompat.getColor(this, R.color.white))
+
+            binding.tabAll.background = null
+            binding.tabAll.setTextColor(ContextCompat.getColor(this, R.color.colorTextSecondary))
+
+            messageViewModel.loadLatestCommunityMessages(currentUserEmail)
         }
     }
 
+    private fun handleIntentExtras(intent: Intent?) {
+        val tab = intent?.getStringExtra("SELECT_TAB")
+        if (tab != null) {
+            switchTab(tab)
+        }
+    }
 
     private fun setupBottomNavigation() {
         val navbarBinding = LayoutNavbarBinding.bind(binding.bottomNavbar.root)
 
-        // Set active icon for Chat
         navbarBinding.navChat.setColorFilter(getColor(R.color.colorOrange))
         navbarBinding.navHome.setColorFilter(getColor(R.color.gray_text))
         navbarBinding.navNotification.setColorFilter(getColor(R.color.gray_text))
@@ -165,5 +174,6 @@ class MessagesActivity : AppCompatActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
+        handleIntentExtras(intent)
     }
 }

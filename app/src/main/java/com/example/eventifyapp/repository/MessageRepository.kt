@@ -29,4 +29,10 @@ class MessageRepository(private val messageDao: MessageDao) {
 
     fun getChatMessages(contactEmail: String, currentUserEmail: String): Flow<List<Message>> =
         messageDao.getChatMessages(contactEmail, currentUserEmail)
+
+    fun getLatestAllMessages(currentUserEmail: String): Flow<List<Message>> =
+        messageDao.getLatestAllMessages(currentUserEmail)
+
+    fun getLatestCommunityMessages(currentUserEmail: String): Flow<List<Message>> =
+        messageDao.getLatestCommunityMessages(currentUserEmail)
 }

@@ -8,20 +8,24 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.eventifyapp.R
 import com.example.eventifyapp.adapters.ReviewAdapter
 import com.example.eventifyapp.repository.ReviewRepository
 import com.example.eventifyapp.viewmodel.ReviewViewModel
 import com.example.eventifyapp.database.AppDatabase
 import com.example.eventifyapp.databinding.ActivityDetailEventBinding
 import com.example.eventifyapp.model.NotificationItem
+import com.example.eventifyapp.model.Message
 import com.example.eventifyapp.repository.EventRepository
 import com.example.eventifyapp.repository.NotificationRepository
+import com.example.eventifyapp.repository.MessageRepository
 import com.example.eventifyapp.viewmodel.EventViewModel
 import com.example.eventifyapp.viewmodel.NotificationViewModel
 import com.example.eventifyapp.utils.NotificationHelper
+import com.example.eventifyapp.viewmodel.MessageViewModel
 import com.example.eventifyapp.viewmodel.ViewModelFactory
-import com.example.eventifyapp.R
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.first
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -32,6 +36,7 @@ class DetailEventActivity : AppCompatActivity() {
     private lateinit var eventViewModel: EventViewModel
     private lateinit var notificationViewModel: NotificationViewModel
     private lateinit var reviewViewModel: ReviewViewModel
+    private lateinit var messageViewModel: MessageViewModel
     private lateinit var reviewPreviewAdapter: ReviewAdapter
 
     private var eventId: Long = -1
@@ -50,24 +55,29 @@ class DetailEventActivity : AppCompatActivity() {
         setupInterestedButton()
         setupSeeReviewsButton()
         setupJoinButton()
+        setupJoinCommunityButton()
         setupReviewPreview()
+        checkCommunityButtonState()
     }
 
     private fun setupViewModel() {
         val database = AppDatabase.getDatabase(applicationContext)
         val eventRepository = EventRepository(database.eventDao())
         val notificationRepository = NotificationRepository(database.notificationDao())
-        val reviewRepository = ReviewRepository(database.reviewDao())  // baru
+        val reviewRepository = ReviewRepository(database.reviewDao())
+        val messageRepository = MessageRepository(database.messageDao())
 
         val factory = ViewModelFactory(
             eventRepository = eventRepository,
             notificationRepository = notificationRepository,
-            reviewRepository = reviewRepository  // baru
+            reviewRepository = reviewRepository,
+            messageRepository = messageRepository
         )
 
         eventViewModel = ViewModelProvider(this, factory)[EventViewModel::class.java]
         notificationViewModel = ViewModelProvider(this, factory)[NotificationViewModel::class.java]
-        reviewViewModel = ViewModelProvider(this, factory)[ReviewViewModel::class.java]  // baru
+        reviewViewModel = ViewModelProvider(this, factory)[ReviewViewModel::class.java]
+        messageViewModel = ViewModelProvider(this, factory)[MessageViewModel::class.java]
     }
 
     private fun getDataFromIntent() {
@@ -90,8 +100,6 @@ class DetailEventActivity : AppCompatActivity() {
         binding.tvDetailDesc.text = description
         binding.tvDetailFullAddress.text = "Alamat lengkap: $location"
         
-        // Cek apakah tvParticipantCount ada di binding sebelum set text
-        // (ID ini ada di layout versi modern yang kita buat)
         try {
             val participantView = binding::class.java.getMethod("getTvParticipantCount").invoke(binding) as? android.widget.TextView
             participantView?.text = "180 Participants"
@@ -103,7 +111,6 @@ class DetailEventActivity : AppCompatActivity() {
     }
 
     private fun setupToolbar() {
-        // Tombol back di toolbar agar benar-benar kembali (finish)
         binding.toolbarDetail.setNavigationOnClickListener {
             finish()
         }
@@ -155,20 +162,13 @@ class DetailEventActivity : AppCompatActivity() {
 
     private fun setupInterestedButton() {
         if (eventId != -1L) {
-            lifecycleScope.launch {
-                val event = eventViewModel.getEventById(eventId)
-                if (event != null) {
-                    updateInterestedButtonState(event.isFavorite)
+            binding.btnInterested.setOnClickListener {
+                if (eventId == -1L) {
+                    Toast.makeText(this, "Event tidak ditemukan", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
                 }
+                markEventAsInterested()
             }
-        }
-
-        binding.btnInterested.setOnClickListener {
-            if (eventId == -1L) {
-                Toast.makeText(this, "Event tidak ditemukan", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            markEventAsInterested()
         }
     }
 
@@ -180,29 +180,32 @@ class DetailEventActivity : AppCompatActivity() {
                 Toast.makeText(this@DetailEventActivity, "Gagal memuat event", Toast.LENGTH_SHORT).show()
                 return@launch
             }
-
+            val newFavorite = !event.isFavorite
             eventViewModel.toggleFavorite(event.id, event.isFavorite)
+            
+            updateInterestedButtonState(newFavorite)
+            updateJoinCommunityButtonState(newFavorite)
 
-            notificationViewModel.addNotification(
-                NotificationItem(
-                    title = "Interested",
-                    message = "Kamu menambahkan ${event.title} ke daftar event kamu!",  // ← pakai nama event
-                    type = "event",
-                    eventId = event.id
+            if (newFavorite) {
+                notificationViewModel.addNotification(
+                    NotificationItem(
+                        title = "Interested",
+                        message = "Kamu menambahkan ${event.title} ke daftar event kamu!",
+                        type = "event",
+                        eventId = event.id
+                    )
                 )
-            )
 
-            // Kirim Android system notification ← ini yang baru
-            NotificationHelper.sendInterestedNotification(
-                context = this@DetailEventActivity,
-                eventTitle = eventTitle
-            )
+                // Kirim Android system notification
+                NotificationHelper.sendInterestedNotification(
+                    context = this@DetailEventActivity,
+                    eventTitle = event.title
+                )
 
-            Toast.makeText(
-                this@DetailEventActivity,
-                "Kamu tertarik pada event ini!",
-                Toast.LENGTH_SHORT
-            ).show()
+                Toast.makeText(this@DetailEventActivity, "Kamu tertarik pada event ini!", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this@DetailEventActivity, "Batal tertarik pada event ini", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -220,6 +223,103 @@ class DetailEventActivity : AppCompatActivity() {
             binding.btnInterested.backgroundTintList = android.content.res.ColorStateList.valueOf(
                 ContextCompat.getColor(this, R.color.colorOrangeSoft)
             )
+        }
+    }
+
+    private fun updateJoinCommunityButtonState(isFavorite: Boolean) {
+        if (isFavorite) {
+            binding.btnJoinCommunity.isEnabled = true
+            binding.btnJoinCommunity.alpha = 1.0f
+            binding.btnJoinCommunity.backgroundTintList = android.content.res.ColorStateList.valueOf(
+                ContextCompat.getColor(this, R.color.colorNavyDark)
+            )
+        } else {
+            binding.btnJoinCommunity.isEnabled = false
+            binding.btnJoinCommunity.alpha = 0.5f
+            binding.btnJoinCommunity.backgroundTintList = android.content.res.ColorStateList.valueOf(
+                ContextCompat.getColor(this, R.color.gray_text)
+            )
+        }
+    }
+
+    private fun checkCommunityButtonState() {
+        if (eventId != -1L) {
+            lifecycleScope.launch {
+                val event = eventViewModel.getEventById(eventId)
+                if (event != null) {
+                    updateInterestedButtonState(event.isFavorite)
+                    updateJoinCommunityButtonState(event.isFavorite)
+                }
+            }
+        }
+    }
+
+    private fun setupJoinCommunityButton() {
+        binding.btnJoinCommunity.setOnClickListener {
+            showSuccessJoinDialog()
+        }
+    }
+
+    private fun showSuccessJoinDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_success_join, null)
+        val dialog = androidx.appcompat.app.AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setCancelable(false)
+            .create()
+
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        val btnStartChatting = dialogView.findViewById<android.widget.Button>(R.id.btnStartChatting)
+        val btnCancelJoin = dialogView.findViewById<android.widget.TextView>(R.id.btnCancelJoin)
+        val tvDialogMessage = dialogView.findViewById<android.widget.TextView>(R.id.tvDialogMessage)
+
+        tvDialogMessage.text = "Kamu sudah terhubung ke grup komunitas untuk event \"$eventTitle\". Yuk mulai ngobrol dengan sesama peserta!"
+
+        btnStartChatting.setOnClickListener {
+            dialog.dismiss()
+            joinCommunityAndNavigate()
+        }
+
+        btnCancelJoin.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
+    private fun joinCommunityAndNavigate() {
+        val communityEmail = "community_event_$eventId"
+        lifecycleScope.launch {
+            val event = eventViewModel.getEventById(eventId)
+            val organizerName = event?.organizer ?: "Organizer"
+            val database = AppDatabase.getDatabase(applicationContext)
+
+            // Periksa apakah pesan komunitas sudah ada
+            val existingMessages = database.messageDao().getChatMessages(communityEmail, "").first()
+            if (existingMessages.isEmpty()) {
+                val welcomeMessage = Message(
+                    senderName = organizerName,
+                    senderEmail = communityEmail,
+                    receiverEmail = "",
+                    message = "Halo teman-teman! Selamat bergabung di grup komunitas $eventTitle. Silakan gunakan grup ini untuk berdiskusi.",
+                    timestamp = System.currentTimeMillis() - 1000,
+                    isRead = true,
+                    isCommunity = true,
+                    eventId = eventId,
+                    groupTitle = "$eventTitle Community"
+                )
+                database.messageDao().insertMessage(welcomeMessage)
+            }
+
+            // Arahkan ke ChatDetailActivity
+            val intent = Intent(this@DetailEventActivity, ChatDetailActivity::class.java).apply {
+                putExtra("SENDER_EMAIL", communityEmail)
+                putExtra("SENDER_NAME", "$eventTitle Community")
+                putExtra("IS_COMMUNITY", true)
+                putExtra("EVENT_ID", eventId)
+                putExtra("FROM_DETAIL_EVENT", true)
+            }
+            startActivity(intent)
         }
     }
 
@@ -258,20 +358,17 @@ class DetailEventActivity : AppCompatActivity() {
     }
 
     private fun setupReviewPreview() {
-            reviewPreviewAdapter = ReviewAdapter(reviews = emptyList()) { review ->
-                reviewViewModel.toggleLikeReview(review)
-            }
-            binding.rvReviewPreview.apply {
-                layoutManager = LinearLayoutManager(
-                    this@DetailEventActivity,
-                    LinearLayoutManager.HORIZONTAL,
-                    false
-                )
-                adapter = reviewPreviewAdapter
-            }
-
-            // ... (sisanya biarkan tetap sama)
-
+        reviewPreviewAdapter = ReviewAdapter(reviews = emptyList()) { review ->
+            reviewViewModel.toggleLikeReview(review)
+        }
+        binding.rvReviewPreview.apply {
+            layoutManager = LinearLayoutManager(
+                this@DetailEventActivity,
+                LinearLayoutManager.HORIZONTAL,
+                false
+            )
+            adapter = reviewPreviewAdapter
+        }
 
         if (eventId != -1L) {
             reviewViewModel.loadReviews(eventId)

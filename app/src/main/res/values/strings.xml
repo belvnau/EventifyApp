@@ -26,7 +26,7 @@
     <string name="weekend">Weekend</string>
     <string name="all_events">All Events</string>
     <string name="new_groups">New groups</string>
-    <string name="your_groups">Your groups</string>
+    <string name="your_groups">Community</string>
     <string name="social_activities">Social Activities</string>
 
     <!-- Detail Event -->
@@ -42,7 +42,7 @@
     <!-- Messages -->
     <string name="messages">Messages</string>
     <string name="all_messages">All Messages</string>
-    <string name="unread">Unread</string>
+    <string name="unread">Community</string>
 
     <!-- Reviews -->
     <string name="add_review">Add Review</string>

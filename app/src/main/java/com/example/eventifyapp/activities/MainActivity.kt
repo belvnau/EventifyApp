@@ -110,6 +110,14 @@ class MainActivity : AppCompatActivity() {
             isGridView = !isGridView
             updateRecyclerViewLayout()
         }
+        binding.btnCommunityCategory.setOnClickListener {
+            val intent = Intent(this, MessagesActivity::class.java).apply {
+                putExtra("SELECT_TAB", "community")
+                flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+            }
+            startActivity(intent)
+            overridePendingTransition(0, 0)
+        }
         binding.btnCategories.setOnClickListener {
             val intent = Intent(this, CategoryActivity::class.java)
             startActivity(intent)

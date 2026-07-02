@@ -62,6 +62,12 @@ class ChatAdapter(
         } else if (holder is ReceivedViewHolder) {
             holder.binding.tvChatMessage.text = message.message
             holder.binding.tvChatTime.text = formattedTime
+            if (message.isCommunity) {
+                holder.binding.tvSenderName.text = message.senderName
+                holder.binding.tvSenderName.visibility = android.view.View.VISIBLE
+            } else {
+                holder.binding.tvSenderName.visibility = android.view.View.GONE
+            }
         }
     }
 

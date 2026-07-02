@@ -75,4 +75,30 @@ class MessageViewModel(private val repository: MessageRepository) : ViewModel() 
             _error.value = e.message
         }
     }
+
+    // Dipakai MessagesActivity, tab All (private + circle chats)
+    fun loadLatestAllMessages(currentUserEmail: String) {
+        viewModelScope.launch {
+            try {
+                repository.getLatestAllMessages(currentUserEmail).collect { list ->
+                    _conversations.value = list
+                }
+            } catch (e: Exception) {
+                _error.value = e.message
+            }
+        }
+    }
+
+    // Dipakai MessagesActivity, tab Community
+    fun loadLatestCommunityMessages(currentUserEmail: String) {
+        viewModelScope.launch {
+            try {
+                repository.getLatestCommunityMessages(currentUserEmail).collect { list ->
+                    _conversations.value = list
+                }
+            } catch (e: Exception) {
+                _error.value = e.message
+            }
+        }
+    }
 }
